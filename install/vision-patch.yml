@@ -1,7 +1,0 @@
-# dsh-vision 识图插件补丁片段
-# 追加到 <DSH_HOME>/profiles/web/cordis.patch.yml(该文件是 YAML 顶层数组;
-# 若已有其他 insert 块,把下面这行追加到同一数组内,或作为独立条目)。
-# 由 HMR 热应用,无需重启;删除本段即可卸载。
-- insert:
-    - id: dsh-vision
-      name: dsh-vision

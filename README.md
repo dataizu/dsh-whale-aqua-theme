@@ -146,32 +146,6 @@ cp <THEME>/whale-icon.css   <DIST>/whale-icon.css
 把 `same-version/index.html` 与两个 CSS 一起覆盖到 `dist`。
 > 不同版本的 DSH 前端资源文件名不同,直接覆盖会导致界面无法加载——所以默认请不要用这个方法。
 
-## 👁️ 识图插件(可选增强)
-
-在模型切换器旁加一个「识图」选择器:选一个支持图片的模型(如 MiniMax M3),之后在对话里**照常粘贴/发送图片**——图片消息正常显示,识别在后台自动完成,识别文字自动转给当前对话模型(适合主模型不支持图片的场景)。模型选择自动保存,重启不丢。
-
-### 安装
-
-1. 复制本仓库的 `dsh-vision/` 文件夹到 DSH 的 web 配置目录:
-   ```
-   <DSH_HOME>/profiles/web/node_modules/dsh-vision/
-   ```
-   (DSH_HOME 通常是 `~/.dsh`)
-2. 把 `install/vision-patch.yml` 里的 `insert` 块追加到
-   `<DSH_HOME>/profiles/web/cordis.patch.yml`(YAML 顶层数组;HMR 热应用,无需重启)。
-3. 硬刷新页面(`Ctrl+Shift+R`),模型切换器右侧出现「识图」选择器。
-
-### 使用前提
-
-- 在 DSH 模型设置里配置好至少一个**支持图片输入的模型**(例如 MiniMax M3;
-  模型需声明 `input: [text, image]`,即设置里该模型带有图片输入标记)。
-- 当前对话主模型不支持图片时,要让图片能**发送成功**,需要二者之一:
-  - 主模型声明图片输入(编辑 `settings.yaml` 中该模型的 `input: [text, image]`,插件会自动拦截并替换为识别文字,不会真的把图片发给主模型);
-  - 或使用 DSH 的「识图模式(vision)」预设开新会话(官方图片通道,自动豁免门禁)。
-
-### 卸载
-
-删除 `cordis.patch.yml` 中的 `dsh-vision` 条目与 `node_modules/dsh-vision/` 文件夹。
 
 ## 📁 文件清单
 
@@ -184,8 +158,6 @@ cp <THEME>/whale-icon.css   <DIST>/whale-icon.css
 | `whale-path.txt` | DeepSeek 官方鲸鱼 SVG path 的压缩版(3 位小数,点阵采样数据源) |
 | `template.html` | index.html 模板(鲸鱼 path 用 `__WHALE_PATH__` 占位) |
 | `reference/hero-whale.svg` | 官方 hero 鲸鱼 SVG 参考 |
-| `dsh-vision/` | 识图插件(宿主面 + 浏览器面),复制到 `profiles/web/node_modules/` |
-| `install/vision-patch.yml` | 识图插件补丁片段(追加到 `profiles/web/cordis.patch.yml`) |
 
 ## 🎚️ 常见调参点
 
