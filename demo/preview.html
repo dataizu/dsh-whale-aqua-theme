@@ -216,6 +216,7 @@
   var canvas = document.createElement('canvas');
   canvas.id = 'dsh-bg-canvas';
   canvas.setAttribute('aria-hidden', 'true');
+  canvas.style.cssText = 'position:fixed;inset:0;z-index:0;pointer-events:none;width:100%;height:100%';
   document.body.appendChild(canvas);
   var ctx = canvas.getContext('2d');
   var DPR = Math.min(window.devicePixelRatio || 1, 1.25);
@@ -276,7 +277,7 @@ var WHALE = 'M22.917 1.43C22.671 1.31 22.566 1.539 22.422 1.655C22.373 1.693 22.
   var whaleLaneRatio = vh < 760 ? 0.60 : 0.74;
   var whale = { x: vw * 0.36, bandY: vh * whaleLaneRatio, y: vh * whaleLaneRatio, amp: vh * 0.065, ph: Math.random() * 6.283, dir: 1, speed: 28, flee: 0, fvx: 0, fvy: 0, tvx: 0, tvy: 0, fleeLevel: 0, cool: 0, turn: 0, turnDir: 0, turnScale: 1, tilt: 0, pathVy: 0 };
   function resize() {
-    var oldW = vw || window.innerWidth, oldH = vh || window.innerHeight;
+    var oldW = vw || window.innerWidth;
     var nx = whale ? whale.x / oldW : 0.30, ny = whale ? whale.bandY / oldH : 0.60;
     vw = window.innerWidth; vh = window.innerHeight;
     whaleLaneRatio = vh < 760 ? 0.60 : 0.74;
@@ -714,7 +715,6 @@ var WHALE = 'M22.917 1.43C22.671 1.31 22.566 1.539 22.422 1.655C22.373 1.693 22.
       }
     }
   })();
-  var btnCanvases = [];
   function attachButtonWhale() {
     var btns = document.querySelectorAll('[data-composer-card] button[class*="_primary"]');
     for (var bi = 0; bi < btns.length; bi++) {
@@ -742,7 +742,6 @@ var WHALE = 'M22.917 1.43C22.671 1.31 22.566 1.539 22.422 1.655C22.373 1.693 22.
     var nowMs = Date.now();
     if (nowMs - lastBtnDraw < 33) return;
     lastBtnDraw = nowMs;
-    for (var bi = 0; bi < btnCanvases.length; bi++) btnCanvases.pop();
     var btns = probe;
     for (var bi = 0; bi < btns.length; bi++) {
       var btn = btns[bi];
@@ -781,6 +780,6 @@ var WHALE = 'M22.917 1.43C22.671 1.31 22.566 1.539 22.422 1.655C22.373 1.693 22.
     drawButtonWhale();
   })();
 })();
-    </script>
+</script>
 </body>
 </html>

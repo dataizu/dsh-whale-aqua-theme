@@ -59,7 +59,7 @@
 
 如果某部分皮肤没生效:在该页面按 F12 → 用选择器检查目标元素的实际类名(形如 `xYz123_row`),把 `apple-style.css` 中对应的哈希前缀替换成你版本里的前缀即可(类名后缀如 `_row` 是稳定的)。
 
-## 🧩 插件方式安装(免改 dist,推荐)
+## 🧩 插件方式安装(首选,免改 dist)
 
 本仓库同时是一个标准的 DSH 插件包(`package.json` 声明 `dsh.bundle` manifest)。插件形态下,主题随 profile 安装、停用、卸载,**不改动任何 dist 文件**,DSH 升级不受影响;背景动画的全部副作用(canvas、window 监听、动画循环、按钮 canvas)都纳入了插件生命周期管理,停止插件即完全回收。
 
@@ -73,7 +73,9 @@ dsh plugin --profile web add https://github.com/dataizu/dsh-whale-aqua-theme
 
 安装完成后重启 DSH 生效;删除 profile `cordis.patch.yml` 中 `id: dsh-whale-aqua` 的 `insert` 行(或在市场中移除)即可停用。
 
-## 🤖 一键 AI 部署(最推荐)
+## 🤖 一键 AI 部署(传统 dist 方式)
+
+> 如果你的 DeepSeek Harness 支持插件系统,**优先使用上面的插件方式安装**——一条命令、不改任何 dist 文件、可随时停用。以下提示词适用于不想引入插件系统的场景。
 
 把下面代码块**原样复制**给你的 AI(DeepSeek Harness / Claude Code / ChatGPT 均可),让它自动完成定位、备份、复制和拼接,任何 DSH 版本都可执行:
 

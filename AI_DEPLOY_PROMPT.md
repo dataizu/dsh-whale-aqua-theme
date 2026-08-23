@@ -2,6 +2,8 @@
 
 > 把下面代码块中的全部内容**原样复制**给你的 AI(DeepSeek Harness、Claude Code、ChatGPT 等均可),让它执行部署。
 
+> **提示**:如果目标机器的 DeepSeek Harness 支持插件系统,推荐直接用**插件方式**安装(见仓库 README「🧩 插件方式安装」):`dsh plugin --profile web add https://github.com/dataizu/dsh-whale-aqua-theme`,一条命令完成、不修改任何 dist 文件。以下提示词用于传统 dist 补丁部署。
+
 ````markdown
 # 任务:给本机的 DeepSeek Harness Web GUI 安装「macOS 主题 + 水中鲸鱼背景」
 
