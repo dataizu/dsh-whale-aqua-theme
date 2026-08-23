@@ -59,6 +59,20 @@
 
 如果某部分皮肤没生效:在该页面按 F12 → 用选择器检查目标元素的实际类名(形如 `xYz123_row`),把 `apple-style.css` 中对应的哈希前缀替换成你版本里的前缀即可(类名后缀如 `_row` 是稳定的)。
 
+## 🧩 插件方式安装(免改 dist,推荐)
+
+本仓库同时是一个标准的 DSH 插件包(`package.json` 声明 `dsh.bundle` manifest)。插件形态下,主题随 profile 安装、停用、卸载,**不改动任何 dist 文件**,DSH 升级不受影响;背景动画的全部副作用(canvas、window 监听、动画循环、按钮 canvas)都纳入了插件生命周期管理,停止插件即完全回收。
+
+**方式一:插件市场** —— 本主题已提交 [awesome-dsh-plugin](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin) 收录,通过审核后可在 dshmarket 插件市场的「🎭 主题与外观」Tab 一键安装/切换/卸载。
+
+**方式二:命令行安装**
+
+```sh
+dsh plugin --profile web add https://github.com/dataizu/dsh-whale-aqua-theme
+```
+
+安装完成后重启 DSH 生效;删除 profile `cordis.patch.yml` 中 `id: dsh-whale-aqua` 的 `insert` 行(或在市场中移除)即可停用。
+
 ## 🤖 一键 AI 部署(最推荐)
 
 把下面代码块**原样复制**给你的 AI(DeepSeek Harness / Claude Code / ChatGPT 均可),让它自动完成定位、备份、复制和拼接,任何 DSH 版本都可执行:
@@ -151,6 +165,8 @@ cp <THEME>/whale-icon.css   <DIST>/whale-icon.css
 
 | 文件 | 作用 |
 | --- | --- |
+| `package.json` / `cordis.patch.yml` | 插件包声明(`dsh.bundle` manifest 与插入行,供插件系统/市场一键安装) |
+| `index.js` / `client.js` | 插件宿主面 / 浏览器面(两个 CSS 全文内嵌;背景动画脚本已移植为带生命周期清理的版本) |
 | `apple-style.css` | macOS 皮肤全套(配色、分区样式、水母发光、磨砂对话区) |
 | `whale-icon.css` | 发送按钮鲸鱼图标与喷水动画(跨版本) |
 | `install/background-snippet.html` | 背景动画脚本补丁(跨版本,拼进自己的 index.html) |

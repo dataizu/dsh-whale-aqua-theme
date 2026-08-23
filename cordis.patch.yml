@@ -1,0 +1,5 @@
+# dsh bundle patch: inserts this theme plugin into a profile's layer stack.
+# Installed via: dsh plugin --profile web add https://github.com/dataizu/dsh-whale-aqua-theme
+- insert:
+    - id: dsh-whale-aqua
+      name: dsh-whale-aqua-theme
