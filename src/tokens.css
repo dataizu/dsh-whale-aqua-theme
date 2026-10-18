@@ -1,0 +1,395 @@
+/* =============================================================================
+   tokens.css — Apple/macOS design-token layer for DSH 0.2.1-rc.2
+   -----------------------------------------------------------------------------
+   Port of dsh-whale-aqua-theme (built for DSH 0.1.x) src/apple-style.css:1-172
+   + the global primitives that used to live at the end of that palette block.
+
+   MERGE TARGET : src/apple-style.css (injected as APPLE_STYLE_CSS)
+   INJECT ORDER : whale-icon.css -> APPLE_STYLE_CSS -> shell.css -> regions.css
+                  (see src/apply.js). So every rule here can be overridden by
+                  shell.css / regions.css, and it can override the 0.2.1 design
+                  platform because the plugin <style> is appended to <head>
+                  after the platform stylesheet.
+
+   EVIDENCE
+     - 0.2.1 token definitions : @deepseek-ai/dsh-client-ui-theme/lib/client.js
+       (formatted copy .scratch-asar/css-fmt/dsh-client-ui-theme__lib__client.js.css
+        lines 110-124 base/easing/radius, 131-511 alias tokens, 512-513 darwin menu,
+        526-554 scrollbar/gradient/shadow/focus, 746-766 shiki)
+     - consumers: `var(--token)` occurrences across all 0.2.1 client bundles
+       (dsh-client-ui-* + dsh-web-frontend shell CSS). Counts in the inline
+       comments are combined-scan totals (formatted CSS *and* raw client.js
+       strings, so ~2x the CSS-only counts listed in token-diff.md) — they exist
+       to show a token is alive, not as exact numbers.
+     - desktop shell probes : lib/preload-app.cjs:586 probes
+       `--dsw-specific-sidebar-fill` + `--dsw-alias-label-primary` for the native
+       Windows caption color -> those two MUST stay opaque (see below).
+
+   SECTIONS
+     A. Light palette  : 59 kept Apple tokens + 1 compatibility patch + adopted
+                         (old palette had 62 --dsw-* tokens: 60 carried here,
+                          1 refactored to --dsw-menu-surface-fill,
+                          1 dropped: --dsw-specific-tip, 0 consumers)
+                         + 1 NEW-REQUIRED token (state-idle-primary, contract)
+     B. Dark palette   : body[data-ds-dark-theme]
+     C. Darwin scope   : only where 0.2.1 itself scopes a token (menu material)
+     D. Global primitives (selection / focus / scrollbar / icon strokes / accent)
+     E. Parity + TODO  : tokens kept for 0.1.x parity but unused in 0.2.1
+
+   STATUS LEGEND (see token-diff.md for the full table)
+     KEPT      name + Apple value unchanged, token still defined & consumed
+     PATCH     removed from 0.2.1 design platform but still referenced by
+               bundles without a fallback -> we must define it
+     ADOPTED   new 0.2.1 token set to the old Apple design language
+     NEW-REQ   required by 0.2.1's custom-theme contract (BUILTIN_INSPECT_TOKENS,
+               light + dark) but absent from the 0.1.x palette
+     PARITY    still defined by 0.2.1 but no current consumer; harmless, prunable
+   ========================================================================== */
+
+/* =============================================================================
+   A. LIGHT PALETTE  — body { ... }   (identity: #007AFF / #1D1D1F / #F5F5F7 /
+                                       #F2F2F7, exactly the 0.1.x Apple palette)
+   ========================================================================== */
+body {
+  /* --- surfaces / layers --- */
+  --dsw-alias-bg-base: #FFFFFF !important;                          /* KEPT  (0.2.1 body background-color + 77 consumers) */
+  --dsw-alias-bg-layer-1: #FFFFFF !important;                       /* KEPT  (97) */
+  --dsw-alias-bg-layer-2: #F5F5F7 !important;                       /* KEPT  (47)  Apple grouped-content grey */
+  --dsw-alias-bg-layer-3: #FFFFFF !important;                       /* KEPT  (26) */
+  --dsw-alias-bg-overlay: #FFFFFF !important;                       /* KEPT  (2; user-questions badge) */
+  --dsw-specific-sidebar-fill: #F2F2F7 !important;                   /* KEPT & MUST STAY OPAQUE: probed by Electron
+                                                             caption sync (preload-app.cjs:586) and used by
+                                                             the 40px [data-windows-titlebar] band in
+                                                             shell.css -> never alpha here. */
+  --dsw-specific-input-major: #FFFFFF !important;                    /* KEPT  (18) composer card surface */
+  --dsw-specific-selector: rgba(0, 0, 0, 0.05) !important;           /* KEPT  (4)  segmented/select chip fill */
+  --dsw-alias-bg-module-platform: rgba(0, 0, 0, 0.04) !important;    /* KEPT  (64) toolbars / nav icons */
+  --dsw-alias-bg-multi-select: rgba(0, 0, 0, 0.04) !important;       /* PARITY (0 consumers) */
+  --dsw-alias-bg-skeleton: rgba(0, 0, 0, 0.05) !important;           /* KEPT  (15) */
+
+  /* --- borders --- */
+  --dsw-alias-border-l1: rgba(0, 0, 0, 0.06) !important;             /* KEPT  (113) hairline */
+  --dsw-alias-border-l2: rgba(0, 0, 0, 0.10) !important;             /* KEPT  (169) */
+  --dsw-alias-border-l2-darkmode-thin: rgba(0, 0, 0, 0.08) !important; /* KEPT (17) .5px strokes */
+  --dsw-alias-border-l3: rgba(0, 0, 0, 0.14) !important;             /* KEPT  (111) */
+  --dsw-alias-border-l4: rgba(0, 0, 0, 0.20) !important;             /* KEPT  (85) */
+
+  /* --- brand / state --- */
+  --dsw-alias-brand-primary: #007AFF !important;                     /* KEPT  (17) */
+  --dsw-alias-state-business-primary: #007AFF !important;            /* KEPT  (334) accent blue */
+  --dsw-alias-state-error-primary: #FF3B30 !important;               /* KEPT  (224) Apple red */
+  --dsw-alias-state-success-primary: #34C759 !important;             /* KEPT  (42)  Apple green */
+  --dsw-alias-state-success-tertiary: rgba(52, 199, 89, 0.12) !important;   /* KEPT (5) */
+  --dsw-alias-state-warn-primary: #FF9500 !important;                /* KEPT  (20)  Apple orange */
+  --dsw-alias-state-warn-tertiary: rgba(255, 149, 0, 0.12) !important;      /* KEPT (27) */
+  /* NEW-REQUIRED: 0.2.1's theme contract (BUILTIN_INSPECT_TOKENS in
+     dsh-client-ui-theme) requires light+dark values for 14 alias tokens,
+     including --dsw-alias-state-idle-primary, which the 0.1.x palette never
+     defined. Value = Apple systemGray4 pair, consistent with the #2C2C2E/
+     #3A3A3C surfaces and the idle dot role in 0.2.1 (base was neutral-300). */
+  --dsw-alias-state-idle-primary: #C7C7CC !important;
+
+  /* --- labels --- */
+  --dsw-alias-label-primary: #1D1D1F !important;                     /* KEPT  (605) MUST stay opaque: caption probe */
+  --dsw-alias-label-primary-dimmed: rgba(29, 29, 31, 0.55) !important; /* KEPT (8) */
+  --dsw-alias-label-primary-foreground: #FFFFFF !important;          /* KEPT  (15) text on primary buttons */
+  --dsw-alias-label-primary-inverted: #FFFFFF !important;            /* KEPT  (8) */
+  --dsw-alias-label-secondary: #545458 !important;                   /* KEPT  (468) */
+  --dsw-alias-label-tertiary: #82828A !important;                    /* KEPT  (640) */
+  --dsw-alias-label-caption: #94949C !important;                     /* KEPT  (173) */
+  --dsw-alias-label-dimmed: #A9A9B0 !important;                      /* KEPT  (17) */
+  /* PATCH: 0.2.1 design platform no longer defines --dsw-alias-label-quaternary,
+     but @deepseek-ai/dsh-client-ui-agent-preset + dsh-client-ui-sidebar-browser
+     still use it for :disabled color WITHOUT a fallback (see token-diff.md).
+     Without this line the declaration is invalid at computed-value time. */
+  --dsw-alias-label-quaternary: rgba(60, 60, 67, 0.18) !important;
+
+  /* --- buttons --- */
+  --dsw-alias-button-primary-fill: #007AFF !important;               /* KEPT  (10) */
+  --dsw-alias-button-primary-hover: #0077ED !important;              /* KEPT  (5) */
+  --dsw-alias-button-info-fill: #007AFF !important;                  /* KEPT  (6) */
+  --dsw-alias-button-info-hover: #0077ED !important;                 /* KEPT  (2) */
+  --dsw-alias-button-contrast-fill: #1D1D1F !important;              /* KEPT  (6) */
+  --dsw-alias-button-elevated-fill: #FFFFFF !important;              /* KEPT  (4)  sidebar new-session / workspace btn */
+  --dsw-alias-button-floating-fill: #FFFFFF !important;              /* KEPT  (6) */
+  --dsw-alias-button-floating-hover: #F2F2F7 !important;             /* KEPT  (6) */
+  --dsw-alias-button-tool-bar-fill: rgba(0, 0, 0, 0.04) !important;  /* KEPT  (1, desktop shell menu bar) */
+  --dsw-alias-button-tool-bar-hover: rgba(0, 0, 0, 0.08) !important; /* KEPT  (1) */
+  --dsw-alias-button-ghost-active-fill: rgba(0, 122, 255, 0.12) !important;   /* KEPT (7) */
+  --dsw-alias-button-ghost-active-border: rgba(0, 122, 255, 0.5) !important;  /* KEPT (5) */
+  --dsw-alias-button-ghost-active-hover: rgba(0, 122, 255, 0.16) !important;  /* PARITY (0) */
+
+  /* --- interaction fills --- */
+  --dsw-alias-interactive-bg-hover: rgba(0, 0, 0, 0.05) !important;       /* KEPT (291) */
+  --dsw-alias-interactive-bg-active: rgba(0, 0, 0, 0.09) !important;      /* KEPT (7) */
+  --dsw-alias-interactive-bg-hover-solid: #F2F2F7 !important;             /* KEPT (20) */
+  --dsw-alias-interactive-bg-hover-danger: rgba(255, 59, 48, 0.08) !important; /* KEPT (20) */
+
+  /* --- scrollbars --- */
+  --dsw-alias-scrollbar-bg-l1: rgba(0, 0, 0, 0.16) !important;       /* KEPT  (6) */
+  --dsw-alias-scrollbar-hover-l1: rgba(0, 0, 0, 0.32) !important;    /* KEPT  (2) */
+  --dsw-alias-scrollbar-bg-l2: rgba(0, 0, 0, 0.12) !important;       /* KEPT  (68) */
+  --dsw-alias-scrollbar-hover-l2: rgba(0, 0, 0, 0.28) !important;    /* KEPT  (68) */
+
+  /* --- shadows / blur --- */
+  --dsw-shadow-lv1: 0 1px 2px rgba(0, 0, 0, 0.04) !important;        /* PARITY: 0 consumers in 0.2.1 */
+  --dsw-shadow-lv2: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04) !important;  /* KEPT (2) */
+  --dsw-shadow-lv3: 0 12px 40px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06) !important; /* KEPT (2, desktop shell) */
+  --dsw-mask-blur: blur(20px) !important;                            /* KEPT  (6)  used as backdrop-filter */
+
+  /* --- misc static --- */
+  --dsw-static-deepseek-450: #007AFF !important;                     /* KEPT  (5)  dark-mode brand alias */
+
+  /* --- custom props (not --dsw-*, still live in 0.2.1) --- */
+  --dsh-scrollbar-width: 6px !important;                             /* KEPT: 0.2.1 ::-webkit-scrollbar{width:var(--dsh-scrollbar-width)} */
+  --ds-ease-in-out: cubic-bezier(0.32, 0.72, 0, 1) !important;       /* KEPT: Apple springy ease, 20+ transitions in 0.2.1 */
+
+  /* ==========================================================================
+     ADOPTED — 0.2.1-only tokens mapped to the old Apple design language
+     ========================================================================== */
+
+  /* 1) Menu material.  0.2.1 refactored the old direct --dsw-specific-menu into
+     --dsw-menu-surface-fill (body{--dsw-specific-menu:var(--dsw-menu-surface-fill)})
+     + --dsw-menu-backdrop-filter. We therefore drive the upstream token; the
+     old 0.1.x look was rgba(255,255,255,0.85) + saturate(180%) blur(30px)
+     (old ._list_19372_8 / ._submenu_19372_9 rule). Do NOT set
+     --dsw-specific-menu directly (it would not cover future material users). */
+  --dsw-menu-surface-fill: rgba(255, 255, 255, 0.85) !important;
+  --dsw-menu-backdrop-filter: saturate(180%) blur(30px) !important;
+
+  /* 2) Radius scale.  0.2.1 base_css_default defines
+     xs:4 sm:8 md:12 lg:16 xl:20 panel:28. Old Apple skin used
+     buttons 8-10, cards 10-14, conversation bubble 18, panels/dialogs 16.
+     Mapping (old rule -> 0.2.1 token consumer found in bundles):
+       ._button_* ._card_* (10)        -> --dsw-radius-md      (158 consumers)
+       .bqrRRG_card (14) / cards       -> --dsw-radius-lg      (113)
+       .gdEzaW_bubble (18), ._2H3hWW_* -> --dsw-radius-xl      (52; incl. .cJsG2q_bubble)
+       dialog / panel (16)             -> --dsw-radius-panel   (13; composer + dialogs)
+     TODO(verify): composer card is .RlGAzG_card{border-radius:var(--dsw-radius-panel)}
+     so it lands at 16 here; the old composer was 18 -> regions.css re-applies 18
+     on [data-composer-card]. Check on bench. */
+  --dsw-radius-md: 10px !important;
+  --dsw-radius-lg: 14px !important;
+  --dsw-radius-xl: 18px !important;
+  --dsw-radius-panel: 16px !important;
+
+  /* 3) Focus ring.  0.2.1 focus_css_default: :root{--dsw-focus-ring-width:2px},
+     components do `outline: var(--dsw-focus-ring-width) solid
+     var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary))` (189 sites).
+     --dsw-focus-ring-color has no default -> old global Apple ring color goes here. */
+  --dsw-focus-ring-color: rgba(0, 122, 255, 0.55) !important;
+
+  /* 4) Settings grouped cards.  0.2.1 ships fill=bg-layer-2 / stroke=border-l4 via
+     body{--dsw-alias-settings-card-fill:...} (5+5 consumers). Old macOS settings
+     card was bg-layer-1 + hairline border-l1, radius 10 (old ._WvWnq_section). */
+  --dsw-alias-settings-card-fill: var(--dsw-alias-bg-layer-1) !important;
+  --dsw-alias-settings-card-stroke: var(--dsw-alias-border-l1) !important;
+
+  /* 5) Brand accent, new name.  0.2.1 changed --dsw-alias-brand-primary to a
+     near-black neutral and introduced --dsw-alias-brand-primary-new-colorprimary-new-color
+     (default #4176e6 light) used by settings links, trajectory rails/selection
+     (25 sites). The old design language accent is #007AFF -> feed it here so the
+     trajectory rail / settings link stay Apple blue, not DeepSeek purple-blue. */
+  --dsw-alias-brand-primary-new-colorprimary-new-color: #007AFF !important;
+
+  /* 6) Settings sidebar nav active accent (0.2.1-only; used by user-questions nav).
+     Old macOS System-Settings active row: blue 12% tint. */
+  --dsw-specific-sidebar-nav-item-active-accent: rgba(0, 122, 255, 0.12) !important;
+  --dsw-specific-sidebar-nav-item-hover: rgba(0, 0, 0, 0.05) !important;   /* KEPT (2) */
+  --dsw-specific-sidebar-nav-item-active: rgba(0, 122, 255, 0.12) !important; /* KEPT (2) */
+
+  /* 7) Links.  0.2.1 --dsw-alias-link default #4176e6 (deepseek-500), 18 consumers
+     (markdown links etc). Old Apple accent blue is #007AFF. */
+  --dsw-alias-link: #007AFF !important;
+
+  /* NOTE (deliberately NOT adopted): --dsw-specific-bubble.
+     0.2.1 uses it for the iMessage-style user bubble (.cJsG2q_bubble, radius-xl,
+     color label-primary) BUT also for goal cards and user-questions cards.
+     The old skin needs a saturated #007AFF fill + white text, which would leak
+     into those cards -> the bubble is re-skinned per-region in regions.css
+     instead of globally in the token layer. Same for --dsw-specific-bubble-highlight
+     (only used by the experimental session inspector). */
+}
+
+/* =============================================================================
+   B. DARK PALETTE — body[data-ds-dark-theme]
+   (identity: #0A84FF / #F5F5F7 / #2C2C2E / #3A3A3C)
+   ========================================================================== */
+body[data-ds-dark-theme] {
+  /* --- surfaces / layers --- */
+  --dsw-alias-bg-base: #1C1C1E !important;                          /* KEPT */
+  --dsw-alias-bg-layer-1: #2C2C2E !important;                       /* KEPT */
+  --dsw-alias-bg-layer-2: #3A3A3C !important;                       /* KEPT */
+  --dsw-alias-bg-layer-3: #3A3A3C !important;                       /* KEPT */
+  --dsw-alias-bg-overlay: #2C2C2E !important;                       /* KEPT */
+  --dsw-specific-sidebar-fill: #2C2C2E !important;                   /* KEPT & OPAQUE (caption probe) */
+  --dsw-specific-input-major: #2C2C2E !important;                    /* KEPT */
+  --dsw-specific-selector: rgba(255, 255, 255, 0.10) !important;     /* KEPT */
+  --dsw-alias-bg-module-platform: rgba(255, 255, 255, 0.08) !important; /* KEPT */
+  --dsw-alias-bg-multi-select: rgba(255, 255, 255, 0.08) !important; /* PARITY */
+  --dsw-alias-bg-skeleton: rgba(255, 255, 255, 0.08) !important;     /* KEPT */
+
+  /* --- borders --- */
+  --dsw-alias-border-l1: rgba(255, 255, 255, 0.08) !important;       /* KEPT */
+  --dsw-alias-border-l2: rgba(255, 255, 255, 0.14) !important;       /* KEPT */
+  --dsw-alias-border-l2-darkmode-thin: rgba(255, 255, 255, 0.08) !important; /* KEPT */
+  --dsw-alias-border-l3: rgba(255, 255, 255, 0.18) !important;       /* KEPT */
+  --dsw-alias-border-l4: rgba(255, 255, 255, 0.24) !important;       /* KEPT */
+
+  /* --- brand / state --- */
+  --dsw-alias-brand-primary: #0A84FF !important;                     /* KEPT */
+  --dsw-alias-state-business-primary: #0A84FF !important;            /* KEPT */
+  --dsw-alias-state-error-primary: #FF453A !important;               /* KEPT */
+  --dsw-alias-state-success-primary: #30D158 !important;             /* KEPT */
+  --dsw-alias-state-success-tertiary: rgba(48, 209, 88, 0.16) !important;   /* KEPT */
+  --dsw-alias-state-warn-primary: #FF9F0A !important;                /* KEPT */
+  --dsw-alias-state-warn-tertiary: rgba(255, 159, 10, 0.16) !important;     /* KEPT */
+  --dsw-alias-state-idle-primary: #48484A !important;                /* NEW-REQUIRED (contract), see light block */
+
+  /* --- labels --- */
+  --dsw-alias-label-primary: #F5F5F7 !important;                     /* KEPT & OPAQUE (caption probe) */
+  --dsw-alias-label-primary-dimmed: rgba(245, 245, 247, 0.55) !important; /* KEPT */
+  --dsw-alias-label-primary-foreground: #FFFFFF !important;          /* KEPT */
+  --dsw-alias-label-primary-inverted: #1C1C1E !important;            /* KEPT */
+  --dsw-alias-label-secondary: #B8B8C0 !important;                   /* KEPT */
+  --dsw-alias-label-tertiary: #8E8E98 !important;                    /* KEPT */
+  --dsw-alias-label-caption: #7E7E88 !important;                     /* KEPT */
+  --dsw-alias-label-dimmed: #6C6C76 !important;                      /* KEPT */
+  --dsw-alias-label-quaternary: rgba(235, 235, 245, 0.18) !important; /* PATCH (see light block) */
+
+  /* --- buttons --- */
+  --dsw-alias-button-primary-fill: #0A84FF !important;               /* KEPT */
+  --dsw-alias-button-primary-hover: #2E90FA !important;              /* KEPT */
+  --dsw-alias-button-info-fill: #0A84FF !important;                  /* KEPT */
+  --dsw-alias-button-info-hover: #2E90FA !important;                 /* KEPT */
+  --dsw-alias-button-contrast-fill: #F5F5F7 !important;              /* KEPT */
+  --dsw-alias-button-elevated-fill: #2C2C2E !important;              /* KEPT */
+  --dsw-alias-button-floating-fill: #3A3A3C !important;              /* KEPT */
+  --dsw-alias-button-floating-hover: #48484A !important;             /* KEPT */
+  --dsw-alias-button-tool-bar-fill: rgba(255, 255, 255, 0.06) !important; /* KEPT */
+  --dsw-alias-button-tool-bar-hover: rgba(255, 255, 255, 0.10) !important; /* KEPT */
+  --dsw-alias-button-ghost-active-fill: rgba(10, 132, 255, 0.20) !important;  /* KEPT */
+  --dsw-alias-button-ghost-active-border: rgba(10, 132, 255, 0.60) !important; /* KEPT */
+  --dsw-alias-button-ghost-active-hover: rgba(10, 132, 255, 0.24) !important;  /* PARITY */
+
+  /* --- interaction fills --- */
+  --dsw-alias-interactive-bg-hover: rgba(255, 255, 255, 0.08) !important;      /* KEPT */
+  --dsw-alias-interactive-bg-active: rgba(255, 255, 255, 0.12) !important;     /* KEPT */
+  --dsw-alias-interactive-bg-hover-solid: #3A3A3C !important;                  /* KEPT */
+  --dsw-alias-interactive-bg-hover-danger: rgba(255, 69, 58, 0.12) !important; /* KEPT */
+
+  /* --- scrollbars --- */
+  --dsw-alias-scrollbar-bg-l1: rgba(255, 255, 255, 0.20) !important;   /* KEPT */
+  --dsw-alias-scrollbar-hover-l1: rgba(255, 255, 255, 0.35) !important;/* KEPT */
+  --dsw-alias-scrollbar-bg-l2: rgba(255, 255, 255, 0.16) !important;   /* KEPT */
+  --dsw-alias-scrollbar-hover-l2: rgba(255, 255, 255, 0.30) !important;/* KEPT */
+
+  /* --- shadows / blur --- */
+  --dsw-shadow-lv1: 0 1px 2px rgba(0, 0, 0, 0.40) !important;          /* PARITY */
+  --dsw-shadow-lv2: 0 4px 16px rgba(0, 0, 0, 0.50), 0 1px 3px rgba(0, 0, 0, 0.40) !important;   /* KEPT */
+  --dsw-shadow-lv3: 0 12px 40px rgba(0, 0, 0, 0.60), 0 2px 8px rgba(0, 0, 0, 0.50) !important;  /* KEPT */
+  --dsw-mask-blur: blur(20px) !important;                              /* KEPT */
+
+  /* --- misc static --- */
+  --dsw-static-deepseek-450: #0A84FF !important;                       /* KEPT */
+
+  /* --- custom props --- */
+  --dsh-scrollbar-width: 6px !important;                               /* KEPT */
+  --ds-ease-in-out: cubic-bezier(0.32, 0.72, 0, 1) !important;         /* KEPT */
+
+  /* --- ADOPTED (dark variants) --- */
+  --dsw-menu-surface-fill: rgba(36, 36, 38, 0.85) !important;          /* old 0.1.x dark menu */
+  --dsw-menu-backdrop-filter: saturate(180%) blur(30px) !important;
+  --dsw-focus-ring-color: rgba(10, 132, 255, 0.65) !important;
+  --dsw-alias-brand-primary-new-colorprimary-new-color: #0A84FF !important;
+  --dsw-specific-sidebar-nav-item-active-accent: rgba(10, 132, 255, 0.24) !important;
+  --dsw-specific-sidebar-nav-item-hover: rgba(255, 255, 255, 0.08) !important; /* KEPT */
+  --dsw-specific-sidebar-nav-item-active: rgba(10, 132, 255, 0.24) !important; /* KEPT */
+  --dsw-alias-link: #0A84FF !important;
+  /* Radius + settings-card fill/stroke are theme-independent / var()-derived,
+     so they intentionally stay in the light block only:
+       --dsw-alias-settings-card-fill:var(--dsw-alias-bg-layer-1) resolves to
+       #2C2C2E here because layer-1 is redefined above; same for the stroke. */
+}
+
+/* =============================================================================
+   C. DARWIN SCOPE — only token 0.2.1 itself scopes on html[data-platform=darwin]
+     is the menu material (theme css lines 512-513):
+       html[data-platform=darwin] body{--dsw-specific-menu:#f8f9faf0}
+     We keep the macOS menu translucent like the rest of the skin. This is the
+     only platform-scoped override; window chrome / caption colors are untouched.
+     (Author runs Windows; darwin values kept conservative and commented.)
+   ========================================================================== */
+html[data-platform=darwin] body {
+  --dsw-specific-menu: rgba(255, 255, 255, 0.85) !important;
+}
+html[data-platform=darwin] body[data-ds-dark-theme] {
+  --dsw-specific-menu: rgba(36, 36, 38, 0.85) !important;
+}
+
+/* =============================================================================
+   D. GLOBAL PRIMITIVES (no CSS-module hashes; carried over verbatim from the
+      0.1.x palette block because they are cross-cutting chrome)
+   ========================================================================== */
+
+/* Text selection: Apple accent tint (old apple-style.css v0.1.x). */
+::selection {
+  background: rgba(0, 122, 255, 0.22);
+}
+body[data-ds-dark-theme] ::selection {
+  background: rgba(10, 132, 255, 0.35);
+}
+
+/* Focus ring: 0.2.1 already renders components' rings from
+   --dsw-focus-ring-width/-color (declared above). Old skin also used a 2px
+   offset; a bare `outline-color` here avoids overriding component outlines. */
+:focus-visible {
+  outline-color: var(--dsw-focus-ring-color, rgba(0, 122, 255, 0.55));
+  outline-offset: 2px;
+}
+/* 0.2.1's focus_css_default nulls the ring for pointer modality:
+   html[data-input-modality=pointer] body :focus-visible:not(:read-write).
+   That rule wins on the focused element itself (higher specificity), so mouse
+   users keep the native no-ring behavior; keyboard users get the Apple ring. */
+
+/* Scrollbar size (0.2.1 consumes --dsh-scrollbar-width, declared above).
+   Old skin also forced 6px directly; that is now redundant and would fight
+   --dsh-scrollbar-width, so no ::-webkit-scrollbar rule is re-declared here. */
+
+/* Checkbox / radio accent (old global rule). */
+body input[type="checkbox"],
+body input[type="radio"] {
+  accent-color: var(--dsw-alias-button-info-fill, #007AFF);
+}
+
+/* Rounder SVG icon joins (old global rule; purely visual). */
+svg path[stroke],
+svg circle[stroke],
+svg rect[stroke],
+svg line[stroke] {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+svg[viewBox="0 0 16 16"] path[stroke] {
+  stroke-width: 1.5px;
+}
+
+/* =============================================================================
+   E. PARITY + DROPPED + TODO
+     Tokens kept although 0.2.1 has no current consumer (0 var() references):
+       --dsw-alias-bg-multi-select          (still defined by 0.2.1)
+       --dsw-alias-button-ghost-active-hover(still defined by 0.2.1)
+       --dsw-shadow-lv1 / lv3               (lv3 is consumed by the desktop shell
+                                             shell CSS; lv1 only by old region rules)
+     Dropped (reason):
+       --dsw-specific-tip  still defined by 0.2.1 (theme css:397/511) but no
+                           consumer in 0.2.1 and no rule in the old theme consumed
+                           it either; its old value #F5F5F7 / #2C2C2E is ~the
+                           0.2.1 default, so dropping it changes nothing.
+     Refactored (reason):
+       --dsw-specific-menu -> now derived by 0.2.1 from --dsw-menu-surface-fill,
+                           so only the upstream token is overridden (block A).
+   TODO(verify@bench): screenshot light+dark settings, composer and menus to
+   confirm radius scale, menu alpha and focus ring. Anything that looks off is a
+   value-only change here.
+   ========================================================================== */

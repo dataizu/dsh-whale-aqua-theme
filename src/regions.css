@@ -1,0 +1,752 @@
+/* =============================================================================
+   regions.css — per-region macOS skin for DSH 0.2.1-rc.2
+   -----------------------------------------------------------------------------
+   Port of dsh-whale-aqua-theme (DSH 0.1.x) src/apple-style.css lines 119-250
+   + the adapter needed for 0.2.1's renamed CSS modules.
+
+   MERGE TARGET : src/regions.css   (inject order whale-icon -> tokens ->
+                  shell -> regions, so this file wins over tokens/shell where a
+                  real selector matches)
+   Source of truth for selectors:
+     - reports/map.json (task-1: 96 old classes -> 0.2.1 classes + semantic hooks)
+     - .scratch-asar/css-fmt/<pkg>__lib__client.js.css (0.2.1 CSS modules)
+     - .scratch-asar/extracted/.../dsh-web-frontend/dist/assets/index-*.css
+       (shared UI kit, family-B `_x_hash` modules)
+     body - runtime DOM: .scratch-verify/logs/run1/{dom-tree.txt,markup-composer.html},
+       discover2-settings-rows.json + conversation/trajectory/settings JSX in the
+       0.2.1 bundles (for data-* hooks).
+
+   INTEGRATION RULES (Lead):
+     - shell.css OWNS html/body/#root/.BynINW_* / .Dc7zOa_root backgrounds (aquarium
+       transparency, !important). This file does NOT set backgrounds on those.
+     - The one inner "opaque plate" that must be cleared is the sidebar inner
+       root (._2H3hWW_root) — see §1. Any other plate exception is marked
+       "PLATE EXCEPTION" so it can be reviewed.
+     - Colours come from tokens.css; radii here are only where the old screenshots
+       differ from the 0.2.1 design-system default.
+
+   ============================ 0.2.1 SELECTOR ADAPTER =========================
+   HASH GROUPS (owning package -> local prefixes used below). Future upgrades:
+   only touch this mapping table, not the rules.
+     @deepseek-ai/dsh-client-ui-conversation : Dc7zOa_*  ConversationRoot
+                                               RlGAzG_*  InputBar/composer
+                                               _2WTFBq_* ContextMeter
+                                               Hqq-bq_*  HeroShell
+     @deepseek-ai/dsh-client-ui-chat         : cJsG2q_*  MessageItem (bubble)
+                                               v5IAXa_*  AssistantMarkdown
+                                               xz4KEq_*  ChatView (scroll/root)
+                                               _3GBCTG_* ReasoningRow (think)
+     @deepseek-ai/dsh-client-ui-trajectory   : haSm5q_*  TrajectoryTable
+     @deepseek-ai/dsh-client-ui-settings-general  : wCInkW_* SettingsRoot
+     @deepseek-ai/dsh-client-ui-settings-account  : _8RVnMG_* , KrzJGG_*
+     @deepseek-ai/dsh-client-ui-settings-models   : _3nPmjq_*
+     @deepseek-ai/dsh-client-ui-theme             : v01cdW_* AppearanceRow
+     @deepseek-ai/dsh-client-ui-sidebar           : _2H3hWW_* SidebarRoot
+     @deepseek-ai/dsh-client-ui-workspace         : hIlkoa_* Rows,
+                                                    _9lTDKa_* WorkspaceBrowser
+     @deepseek-ai/dsh-client-ui-directory-picker-browse : Fv-y6W_*
+     @deepseek-ai/dsh-client-ui-tool              : pFy1Ka_* ToolRow
+     @deepseek-ai/dsh-client-ui-cordis            : _3jVEXG_* CordisRunRow
+     settings per-tab select triggers (settings rows):
+       dsh-client-locale Hefa_q_selector, dsh-client-ui-permission-presets
+       body _3HsggG_selector, dsh-client-ui-chat XZcbxG_selector,
+       dsh-client-ui-conversation mP3ANa_selector
+     dsh-web-frontend shared UI kit (index-*.css):
+       body _button_1rv3m_*, _list_4ub78_*, _submenu_4ub78_*, _item_4ub78_*,
+       body _denseList_4ub78_*, _check_4ub78_*, _root_4ub78_*, _surface_ri079_*,
+       body _dialog_o6lrb_*, _confirmation_cjd8z_*, _toast_l6cvn_*,
+       body _bubble_12mhf_* (tooltip), _pill_1bqmh_*, _card_38jqx_* (hovercard),
+       _backdrop_19zw2_*, _close_19zw2_*, _markdown_1ypvv_* (markdown typography)
+
+   Semantic hooks used (verified in 0.2.1 bundles/runtime):
+     [data-composer-card] [data-composer-input] [data-composer-seat]
+     [data-conversation-tabs] [role=tab] [aria-selected]
+     [data-conversation-region] [data-conversation-scroll]
+     [role=treeitem][data-row-key^=session|search:] [aria-selected=true]
+     [data-variant=think][data-state=running] [data-chat-flow-kind]
+     [data-selected=true] [data-kind=...] [data-collapsed-summary] [data-role-kind]
+     nav button[aria-current=true]
+   ========================================================================== */
+
+/* ============================================================================
+   §1. SIDEBAR  (_2H3hWW_*  — @deepseek-ai/dsh-client-ui-sidebar)
+   Old: .hHd-Xa_root / .hHd-Xa_newSession / .qDHVXG_sectionLabel
+   ========================================================================== */
+
+/* PLATE EXCEPTION (approved by Lead): shell.css makes .BynINW_sidebarCol glass,
+   but the sidebar inner root re-paints the opaque --dsw-specific-sidebar-fill.
+   Clear it so the aquarium glass shows through. The 40px Windows drag band in
+   shell.css keeps its solid fill, so the native caption probe is unaffected. */
+body ._2H3hWW_root {
+  background: transparent !important;
+}
+
+/* Old 0.1.x macOS: filled blue "new session" button (0.2.1 defaults to a white
+   elevated button). Not applied in collapsed rail mode (old rule had :not). */
+body ._2H3hWW_root:not(._2H3hWW_collapsed) ._2H3hWW_newSession {
+  background: var(--dsw-alias-button-primary-fill);
+  border-color: transparent;
+  color: #FFFFFF;
+  border-radius: 8px;
+}
+body ._2H3hWW_root:not(._2H3hWW_collapsed) ._2H3hWW_newSession:hover {
+  background: var(--dsw-alias-button-primary-hover);
+}
+
+/* Workspace/session list section label: 11px semibold (Finder style).
+   Old .qDHVXG_sectionLabel -> ._9lTDKa_sectionLabel (@deepseek-ai/dsh-client-ui-workspace). */
+body ._9lTDKa_sectionLabel {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ============================================================================
+   §2. SESSION ROWS / WORKSPACE TREE
+   body Old: .YDXeBa_sessionRow / _selected / _time / _meta / _slot,
+        body .YDXeBa_searchResultRow / _searchResultSnippet / _searchResultWorkspace,
+        .YDXeBa_selected, ._matrix_10orb_4, ._dot_10orb_3
+   New: @deepseek-ai/dsh-client-ui-workspace/Rows  hIlkoa_*
+   Semantic: [role=treeitem][data-row-key^="session:"|"search:"][aria-selected=true]
+   (runtime: run1 sessionRows = "hIlkoa_sessionRow hIlkoa_selected")
+   ========================================================================== */
+
+/* Finder-style solid blue selected row (light #0A60FF per old 0.1.x; dark #0A84FF). */
+body [role="treeitem"][data-row-key^="session:"][aria-selected="true"],
+body [role="treeitem"][data-row-key^="search:"][aria-selected="true"],
+body .hIlkoa_sessionRow.hIlkoa_selected,
+body .hIlkoa_searchResultRow.hIlkoa_selected {
+  background: #0A60FF;
+  color: #FFFFFF;
+}
+body[data-ds-dark-theme] [role="treeitem"][data-row-key^="session:"][aria-selected="true"],
+body[data-ds-dark-theme] [role="treeitem"][data-row-key^="search:"][aria-selected="true"],
+body[data-ds-dark-theme] .hIlkoa_sessionRow.hIlkoa_selected,
+body[data-ds-dark-theme] .hIlkoa_searchResultRow.hIlkoa_selected {
+  background: #0A84FF;
+}
+
+/* Secondary text on the blue selection: white at 78% (old rule). */
+body [role="treeitem"][aria-selected="true"] .hIlkoa_time,
+body [role="treeitem"][aria-selected="true"] .hIlkoa_meta,
+body [role="treeitem"][aria-selected="true"] .hIlkoa_slot,
+body [role="treeitem"][aria-selected="true"] .hIlkoa_searchResultSnippet,
+body [role="treeitem"][aria-selected="true"] .hIlkoa_searchResultWorkspace {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* Running-indicator dot turns white on the blue selection.
+   Old ._matrix_10orb_4 (missing in 0.2.1, map.json) / ._dot_10orb_3
+   -> the 0.2.1 equivalent is .hIlkoa_dot (workspace/Rows). */
+body [role="treeitem"][aria-selected="true"] .hIlkoa_dot {
+  color: #FFFFFF;
+}
+
+/* ============================================================================
+   §3. CONVERSATION HEADER + VIEW TABS
+   Old: .wSkVaW_header / .wSkVaW_tabs / .wSkVaW_tab / .wSkVaW_tabActive
+   New: @deepseek-ai/dsh-client-ui-conversation/ConversationRoot Dc7zOa_*
+        semantic: [data-conversation-tabs][role=tablist] > button[role=tab][aria-selected]
+   0.2.1 defaults to underline tabs; the old skin used an iOS segmented pill.
+   ========================================================================== */
+
+/* Remove the legacy header divider (old rule). */
+body .Dc7zOa_header {
+  border-bottom-color: transparent;
+}
+
+/* iOS-style segmented control container. */
+body [data-conversation-tabs] {
+  gap: 0;
+  margin-top: 8px;
+  padding: 3px;
+  width: fit-content;
+  background: var(--dsw-alias-bg-module-platform, rgba(0, 0, 0, 0.04));
+  border: 1px solid var(--dsw-alias-border-l1);
+  border-radius: 999px;
+}
+
+/* Segment label. */
+body [data-conversation-tabs] button[role="tab"] {
+  color: var(--dsw-alias-label-primary);
+  padding: 5px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  transition:
+    body background-color 0.2s var(--ds-ease-in-out),
+    color 0.2s var(--ds-ease-in-out);
+}
+body [data-conversation-tabs] button[role="tab"]:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+/* Selected segment: filled Apple blue + white label (old active pill). */
+body [data-conversation-tabs] button[role="tab"][aria-selected="true"],
+body [data-conversation-tabs] button[role="tab"][aria-selected="true"]:hover {
+  background: var(--dsw-alias-button-info-fill, #007AFF);
+  color: #FFFFFF;
+}
+
+/* Remove the 0.2.1 underline (old rule killed wSkVaW_tab:after). */
+body .Dc7zOa_header:after,
+body [data-conversation-tabs] button[role="tab"]:after {
+  display: none;
+}
+
+/* ============================================================================
+   §4. CONVERSATION SURFACES — frosted glass over the aquarium
+   Old: .fV0t5q_root (bg layer-1 — DROPPED, would re-opaque shell areas) and
+        .Md3f7G_scroll (frosted backdrop).
+   reports/selector-map.md §3.16: old scroll maps to .xz4KEq_scroll (inner) OR
+   .Dc7zOa_scrollBody (outer); the outer scrollport is what visually reads as
+   "the conversation surface", so the frost goes on the semantic
+   [data-conversation-scroll] host. It is scoped to an open session
+   ([data-conversation-session] on the conversation body) so the empty-state
+   hero keeps the full aquarium visible.
+   PLATE EXCEPTION (report to Lead): .Dc7zOa_composerSeat keeps 0.2.1's sticky
+   gradient painted with --dsw-alias-bg-base (#FFFFFF); the optional de-seam
+   override is documented in NOTES.md §4 and is NOT shipped until verified.
+   ========================================================================== */
+body [data-conversation-session] [data-conversation-scroll] {
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  backdrop-filter: blur(18px) saturate(170%);
+}
+body[data-ds-dark-theme] [data-conversation-session] [data-conversation-scroll] {
+  background: rgba(28, 28, 30, 0.78);
+}
+
+/* ============================================================================
+   §5. iMESSAGE-STYLE USER BUBBLE
+   Old: .gdEzaW_bubble (+ ._markdown_1nba0_5 and compaction children)
+   New: @deepseek-ai/dsh-client-ui-chat/MessageItem  .cJsG2q_bubble
+        (no stable attribute — inside [data-conversation-region="chat"])
+        bubble markdown: shared UI kit ._markdown_1ypvv_5
+   ========================================================================== */
+body .cJsG2q_bubble {
+  background: var(--dsw-alias-button-info-fill, #007AFF);
+  color: #FFFFFF;
+  border-radius: 18px; /* old 18px; radius-xl token is also 18 — explicit for the old rule */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
+}
+body .cJsG2q_bubble ._markdown_1ypvv_5 {
+  color: #FFFFFF;
+}
+body .cJsG2q_bubble a,
+body .cJsG2q_bubble ._markdown_1ypvv_5 a {
+  color: #FFFFFF;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+body .cJsG2q_bubble ._markdown_1ypvv_5 :not(pre) > code {
+  background-color: rgba(255, 255, 255, 0.24);
+  color: #FFFFFF;
+}
+body .cJsG2q_bubble .cJsG2q_compactionTitle,
+body .cJsG2q_bubble .cJsG2q_compactionSummary,
+body .cJsG2q_bubble .cJsG2q_compactionBody,
+body .cJsG2q_bubble .cJsG2q_compactionLeading {
+  color: rgba(255, 255, 255, 0.82);
+}
+body .cJsG2q_bubble .cJsG2q_compactionSep {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* ============================================================================
+   §6. ASSISTANT WHALE AVATAR
+   Old: .Sxvs8a_root (padding-left 36px + 20x14.7px whale mask at top-left)
+   map.json: Sxvs8a_root = ambiguous, recommended .v5IAXa_root
+   (@deepseek-ai/dsh-client-ui-chat/AssistantMarkdown) — one root per assistant
+   answer. The whale SVG path is the same data URI as 0.1.x (no external asset).
+   TODO(verify): old avatar was attached to the assistant *row*; 0.2.1 renders
+   reasoning in a separate node, so the avatar currently starts at the answer
+   markdown block. Compare against reference screenshots on the bench.
+   ========================================================================== */
+body .v5IAXa_root {
+  position: relative;
+  padding-left: 36px;
+}
+body .v5IAXa_root::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 20px;
+  height: 14.7px;
+  background: var(--dsw-alias-state-business-primary, #007AFF);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2023.16%2017.04'%3E%3Cpath%20fill%3D'black'%20d%3D'M22.917%201.43C22.671%201.31%2022.566%201.539%2022.422%201.655C22.373%201.693%2022.332%201.742%2022.29%201.787C21.932%202.17%2021.513%202.421%2020.966%202.391C20.166%202.346%2019.483%202.598%2018.879%203.21C18.75%202.455%2018.324%202.005%2017.675%201.716C17.335%201.566%2016.992%201.415%2016.754%201.089C16.588%200.856%2016.542%200.597%2016.459%200.342C16.406%200.188%2016.354%200.03%2016.176%200.004C15.984%20-0.026%2015.908%200.135%2015.833%200.27C15.531%200.822%2015.414%201.43%2015.425%202.046C15.452%203.432%2016.037%204.535%2017.199%205.32C17.331%205.41%2017.365%205.5%2017.324%205.632C17.244%205.902%2017.15%206.165%2017.067%206.435C17.014%206.608%2016.935%206.646%2016.75%206.57C16.112%206.304%2015.561%205.909%2015.074%205.433C14.248%204.633%2013.5%203.751%2012.568%203.06C12.349%202.898%2012.13%202.748%2011.903%202.605C10.952%201.682%2012.028%200.923%2012.277%200.833C12.538%200.739%2012.368%200.416%2011.526%200.42C10.684%200.424%209.914%200.706%208.933%201.081C8.789%201.138%208.638%201.179%208.484%201.213C7.593%201.044%206.668%201.006%205.702%201.115C3.883%201.318%202.43%202.178%201.362%203.646C0.079%205.41%20-0.223%207.415%200.147%209.506C0.535%2011.71%201.66%2013.535%203.389%2014.962C5.181%2016.441%207.246%2017.166%209.601%2017.027C11.032%2016.944%2012.624%2016.753%2014.421%2015.232C14.874%2015.458%2015.35%2015.548%2016.138%2015.615C16.746%2015.672%2017.331%2015.585%2017.784%2015.491C18.493%2015.341%2018.444%2014.684%2018.188%2014.564C16.108%2013.595%2016.565%2013.989%2016.15%2013.67C17.206%2012.42%2018.82%2010.198%2019.318%207.172C19.367%206.838%2019.43%206.368%2019.422%206.097C19.418%205.932%2019.456%205.868%2019.645%205.849C20.166%205.789%2020.671%205.647%2021.136%205.391C22.483%204.655%2023.027%203.446%2023.155%201.997C23.174%201.776%2023.151%201.547%2022.917%201.43ZM11.175%2014.474C9.159%2012.889%208.182%2012.368%207.778%2012.39C7.401%2012.412%207.469%2012.844%207.552%2013.126C7.639%2013.404%207.752%2013.596%207.91%2013.84C8.02%2014.001%208.095%2014.241%207.801%2014.422C7.152%2014.823%206.023%2014.287%205.97%2014.26C4.657%2013.486%203.559%2012.466%202.785%2011.069C2.037%209.725%201.603%208.283%201.532%206.744C1.513%206.372%201.622%206.241%201.992%206.173C2.479%206.083%202.981%206.064%203.468%206.136C5.525%206.436%207.276%207.356%208.744%208.813C9.582%209.642%2010.216%2010.634%2010.869%2011.602C11.563%2012.631%2012.31%2013.611%2013.262%2014.415C13.598%2014.696%2013.866%2014.91%2014.122%2015.068C13.349%2015.155%2012.058%2015.173%2011.175%2014.475L11.175%2014.474ZM12.141%208.26C12.141%208.095%2012.273%207.963%2012.439%207.963C12.476%207.963%2012.51%207.971%2012.541%207.982C12.582%207.997%2012.62%208.019%2012.65%208.053C12.704%208.106%2012.734%208.181%2012.734%208.26C12.734%208.425%2012.602%208.556%2012.436%208.556C12.27%208.556%2012.141%208.425%2012.141%208.26ZM15.142%209.799C14.949%209.878%2014.756%209.945%2014.572%209.953C14.284%209.968%2013.972%209.851%2013.802%209.709C13.538%209.487%2013.348%209.363%2013.27%208.977C13.236%208.812%2013.254%208.556%2013.284%208.41C13.352%208.094%2013.277%207.892%2013.054%207.708C12.874%207.558%2012.643%207.516%2012.39%207.516C12.296%207.516%2012.209%207.475%2012.144%207.441C12.039%207.389%2011.952%207.257%2012.035%207.096C12.062%207.043%2012.19%206.916%2012.22%206.893C12.564%206.698%2012.96%206.762%2013.326%206.908C13.666%207.047%2013.922%207.302%2014.292%207.663C14.67%208.098%2014.738%208.218%2014.952%208.545C15.122%208.801%2015.277%209.063%2015.383%209.364C15.447%209.551%2015.364%209.705%2015.142%209.799Z'%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2023.16%2017.04'%3E%3Cpath%20fill%3D'black'%20d%3D'M22.917%201.43C22.671%201.31%2022.566%201.539%2022.422%201.655C22.373%201.693%2022.332%201.742%2022.29%201.787C21.932%202.17%2021.513%202.421%2020.966%202.391C20.166%202.346%2019.483%202.598%2018.879%203.21C18.75%202.455%2018.324%202.005%2017.675%201.716C17.335%201.566%2016.992%201.415%2016.754%201.089C16.588%200.856%2016.542%200.597%2016.459%200.342C16.406%200.188%2016.354%200.03%2016.176%200.004C15.984%20-0.026%2015.908%200.135%2015.833%200.27C15.531%200.822%2015.414%201.43%2015.425%202.046C15.452%203.432%2016.037%204.535%2017.199%205.32C17.331%205.41%2017.365%205.5%2017.324%205.632C17.244%205.902%2017.15%206.165%2017.067%206.435C17.014%206.608%2016.935%206.646%2016.75%206.57C16.112%206.304%2015.561%205.909%2015.074%205.433C14.248%204.633%2013.5%203.751%2012.568%203.06C12.349%202.898%2012.13%202.748%2011.903%202.605C10.952%201.682%2012.028%200.923%2012.277%200.833C12.538%200.739%2012.368%200.416%2011.526%200.42C10.684%200.424%209.914%200.706%208.933%201.081C8.789%201.138%208.638%201.179%208.484%201.213C7.593%201.044%206.668%201.006%205.702%201.115C3.883%201.318%202.43%202.178%201.362%203.646C0.079%205.41%20-0.223%207.415%200.147%209.506C0.535%2011.71%201.66%2013.535%203.389%2014.962C5.181%2016.441%207.246%2017.166%209.601%2017.027C11.032%2016.944%2012.624%2016.753%2014.421%2015.232C14.874%2015.458%2015.35%2015.548%2016.138%2015.615C16.746%2015.672%2017.331%2015.585%2017.784%2015.491C18.493%2015.341%2018.444%2014.684%2018.188%2014.564C16.108%2013.595%2016.565%2013.989%2016.15%2013.67C17.206%2012.42%2018.82%2010.198%2019.318%207.172C19.367%206.838%2019.43%206.368%2019.422%206.097C19.418%205.932%2019.456%205.868%2019.645%205.849C20.166%205.789%2020.671%205.647%2021.136%205.391C22.483%204.655%2023.027%203.446%2023.155%201.997C23.174%201.776%2023.151%201.547%2022.917%201.43ZM11.175%2014.474C9.159%2012.889%208.182%2012.368%207.778%2012.39C7.401%2012.412%207.469%2012.844%207.552%2013.126C7.639%2013.404%207.752%2013.596%207.91%2013.84C8.02%2014.001%208.095%2014.241%207.801%2014.422C7.152%2014.823%206.023%2014.287%205.97%2014.26C4.657%2013.486%203.559%2012.466%202.785%2011.069C2.037%209.725%201.603%208.283%201.532%206.744C1.513%206.372%201.622%206.241%201.992%206.173C2.479%206.083%202.981%206.064%203.468%206.136C5.525%206.436%207.276%207.356%208.744%208.813C9.582%209.642%2010.216%2010.634%2010.869%2011.602C11.563%2012.631%2012.31%2013.611%2013.262%2014.415C13.598%2014.696%2013.866%2014.91%2014.122%2015.068C13.349%2015.155%2012.058%2015.173%2011.175%2014.475L11.175%2014.474ZM12.141%208.26C12.141%208.095%2012.273%207.963%2012.439%207.963C12.476%207.963%2012.51%207.971%2012.541%207.982C12.582%207.997%2012.62%208.019%2012.65%208.053C12.704%208.106%2012.734%208.181%2012.734%208.26C12.734%208.425%2012.602%208.556%2012.436%208.556C12.27%208.556%2012.141%208.425%2012.141%208.26ZM15.142%209.799C14.949%209.878%2014.756%209.945%2014.572%209.953C14.284%209.968%2013.972%209.851%2013.802%209.709C13.538%209.487%2013.348%209.363%2013.27%208.977C13.236%208.812%2013.254%208.556%2013.284%208.41C13.352%208.094%2013.277%207.892%2013.054%207.708C12.874%207.558%2012.643%207.516%2012.39%207.516C12.296%207.516%2012.209%207.475%2012.144%207.441C12.039%207.389%2011.952%207.257%2012.035%207.096C12.062%207.043%2012.19%206.916%2012.22%206.893C12.564%206.698%2012.96%206.762%2013.326%206.908C13.666%207.047%2013.922%207.302%2014.292%207.663C14.67%208.098%2014.738%208.218%2014.952%208.545C15.122%208.801%2015.277%209.063%2015.383%209.364C15.447%209.551%2015.364%209.705%2015.142%209.799Z'%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+}
+
+/* ============================================================================
+   §7. THINK CARD (semantic, selector unchanged from 0.1.x)
+   Old: [data-variant="think"] / [data-state="running"]
+   0.2.1: ReasoningRow root div carries data-variant="think" data-state=running|ok
+          (dsh-client-ui-chat JSX + _3GBCTG_root styles)
+   ========================================================================== */
+body [data-variant="think"] {
+  background: var(--dsw-alias-bg-layer-2);
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-left: 3px solid var(--dsw-alias-state-business-primary, #007AFF);
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin: 4px 0 0;
+}
+body [data-variant="think"][data-state="running"] {
+  background: color-mix(in srgb, var(--dsw-alias-state-business-primary, #007AFF) 5%, var(--dsw-alias-bg-layer-2));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--dsw-alias-state-business-primary, #007AFF) 25%, transparent);
+}
+
+/* ============================================================================
+   §8. TRAJECTORY  (@deepseek-ai/dsh-client-ui-trajectory  haSm5q_*)
+   Old: .Y0dWHa_kindTag / .Y0dWHa_table tr[data-selected=true] /
+        .Y0dWHa_detailTabs / _detailTab / _detailTabActive /
+        tr[data-collapsed-summary] td
+   Dropped (see NOTES.md): old per-event card + timeline-dot rules
+   body (Y0dWHa_table border-spacing, td.Y0dWHa_event cards, ::before dots,
+   Y0dWHa_turnRail display:none) — 0.2.1 redesigned the trajectory with its own
+   turn/selection rails and the reference screenshot intent is "boxed coloured
+   badges + blue selected row", which is what we port here.
+   ========================================================================== */
+
+/* Boxed, coloured kind badge (0.2.1 per-kind colour classes set currentColor). */
+body .haSm5q_kindTag {
+  border-radius: 5px;
+  border: 1.5px solid currentColor;
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  height: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Blue selected row (0.2.1 base uses interactive-bg-active). */
+body .haSm5q_table tbody tr[data-selected="true"] {
+  background: color-mix(in srgb, var(--dsw-alias-state-business-primary, #007AFF) 10%, transparent);
+}
+
+/* Collapsed-summary rows keep a subtle platform fill (old rule). */
+body .haSm5q_table tbody tr[data-collapsed-summary] td {
+  background: var(--dsw-alias-bg-module-platform);
+}
+
+/* iOS-style pill detail tabs (old rule; 0.2.1 base has underline tabs). */
+body .haSm5q_detailTabs {
+  gap: 4px;
+  padding: 4px 8px;
+  height: 38px;
+  align-items: center;
+}
+body .haSm5q_detailTab {
+  border-radius: 999px;
+  padding: 3px 12px;
+  line-height: 18px;
+}
+body .haSm5q_detailTabActive,
+body .haSm5q_detailTabActive:hover {
+  background: var(--dsw-alias-button-info-fill, #007AFF);
+  color: #FFFFFF;
+}
+body .haSm5q_detailTabActive:after {
+  display: none;
+}
+
+/* ============================================================================
+   body §9. SETTINGS  (@deepseek-ai/dsh-client-ui-settings-general wCInkW_*,
+                  body settings-account _8RVnMG_* and KrzJGG_*, settings-models _3nPmjq_*,
+                  theme v01cdW_*)
+   Old: .VOzbGW_* / ._WvWnq_section / .ydkMvW_section / .zGbnIq_* /
+        ._8HJdBW_themeCube / ._card_1b2ny_13
+   ========================================================================== */
+
+/* ---- 9.1 nav rail ------------------------------------------------------- */
+/* Old macOS System-Settings rail: 220px, 17px semibold title, squircle icons. */
+body .wCInkW_nav {
+  width: 220px;
+}
+body .wCInkW_navTitle {
+  font-size: 17px;
+  font-weight: 600;
+}
+body .wCInkW_navCell {
+  border-radius: 8px;
+}
+/* Squircle icon chip (0.2.1 base only sets flex:none). */
+body .wCInkW_navIcon {
+  display: block;
+  width: 26px;
+  height: 26px;
+  padding: 5px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  background: var(--dsw-alias-bg-module-platform);
+  color: var(--dsw-alias-state-business-primary, #007AFF);
+}
+/* Active row: blue chip + white glyph (token drives the row tint:
+   --dsw-specific-sidebar-nav-item-active). */
+body .wCInkW_navCell.wCInkW_active .wCInkW_navIcon,
+body .wCInkW_navCell[aria-current="true"] .wCInkW_navIcon {
+  background: var(--dsw-alias-button-info-fill, #007AFF);
+  color: #FFFFFF;
+}
+
+/* ---- 9.2 panel shell ---------------------------------------------------- */
+/* Old settings dialog: 1000px wide, 16px radius (radius-panel token = 16). */
+body .wCInkW_panel {
+  width: 1000px;
+  max-width: calc(100vw - 48px);
+}
+body .wCInkW_trigger {
+  border-radius: 8px;
+}
+
+/* Popup-select trigger inside settings rows: old macOS bordered white menu
+   button. 0.2.1's per-tab selectors are grey pills (bg-module-platform, no
+   border) owned by different packages (runtime classes confirmed in
+   discover2-settings-rows.json):
+     .Hefa_q_selector     dsh-client-locale (language)
+     ._3HsggG_selector    dsh-client-ui-permission-presets (access mode)
+     .XZcbxG_selector     dsh-client-ui-chat (workspace steps / perf details)
+     .mP3ANa_selector     dsh-client-ui-conversation (busy-send behaviour)
+   Only surface/border are restyled — base size/contents stay so no chevron
+   clipping. 0.2.1 has no wrapper class on these popup selects (_root_4ub78_1 is
+   the generic menu anchor), so the selectors are matched directly. */
+body .wCInkW_options .Hefa_q_selector,
+body .wCInkW_options ._3HsggG_selector,
+body .wCInkW_options .XZcbxG_selector,
+body .wCInkW_options .mP3ANa_selector {
+  border: 1px solid var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-bg-layer-1);
+  border-radius: 8px;
+  box-shadow: var(--dsw-shadow-lv1);
+}
+body .wCInkW_options .Hefa_q_selector:hover,
+body .wCInkW_options ._3HsggG_selector:hover,
+body .wCInkW_options .XZcbxG_selector:hover,
+body .wCInkW_options .mP3ANa_selector:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+/* Grouped settings card (old ._WvWnq_section: layer-1 + hairline + 10px).
+   runtime-dom.md §9: 0.2.1 has no shared SettingsSection class — the old
+   _WvWnq_section/ydkMvW_section look must be applied to every per-tab section
+   module (account / general / models / plugin-inventory / plugins / subagent).
+   Final 0.1.x cascade was the card rule (it came after the divider rule), so
+   the card wins here too. */
+body ._8RVnMG_section,
+body .zZnCHW_section,
+body ._3nPmjq_section,
+body .RotMhW_section,
+body .amjGKq_section,
+body .pbObnW_section {
+  background: var(--dsw-alias-bg-layer-1);
+  border: 1px solid var(--dsw-alias-border-l1);
+  border-radius: 10px;
+  padding: 0 16px;
+  overflow: hidden;
+}
+
+/* Account notice card (old ._card_1b2ny_13, owner guess AccountNotice ->
+   .KrzJGG_card; map.json's generic pick differs, semantic owner wins). */
+body .KrzJGG_card {
+  border-radius: 10px;
+}
+
+/* ---- 9.3 models tab cards/buttons (old zGbnIq_* rules) ------------------ */
+body ._3nPmjq_primaryButton,
+body ._3nPmjq_secondaryButton,
+body ._3nPmjq_dangerButton {
+  border-radius: 10px;
+}
+body ._3nPmjq_rowActions ._3nPmjq_secondaryButton,
+body ._3nPmjq_rowActions ._3nPmjq_dangerButton {
+  border-radius: 8px;
+}
+body ._3nPmjq_addButton,
+body ._3nPmjq_addModelButton,
+body ._3nPmjq_linkButton {
+  border-radius: 8px;
+}
+body ._3nPmjq_rowCard,
+body ._3nPmjq_editor,
+body ._3nPmjq_addCard,
+body ._3nPmjq_setupCard {
+  border-radius: 10px;
+}
+body ._3nPmjq_modelEntry {
+  border-radius: 6px;
+}
+
+/* ---- 9.4 appearance theme cubes (old _8HJdBW_themeCube) ----------------- */
+body .v01cdW_themeCube {
+  position: relative;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 13px;
+  line-height: 18px;
+}
+body .v01cdW_themeCube.v01cdW_selected {
+  background: var(--dsw-alias-button-primary-fill, #007AFF);
+  border-color: transparent;
+  color: #FFFFFF;
+}
+body .v01cdW_themeCube.v01cdW_selected::after {
+  content: "\2713";
+  position: absolute;
+  top: 6px;
+  right: 9px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ============================================================================
+   §10. COMPOSER  (@deepseek-ai/dsh-client-ui-conversation RlGAzG_*)
+   Old: [data-composer-card] radius, jelly glow (focus / running / sending)
+   body Semantic: [data-composer-card], [data-composer-input] contenteditable,
+             :has(rect) = send button shows the stop square (running)
+   ========================================================================== */
+
+/* 18px composer radius (old rule; token radius-panel renders 16 for dialogs). */
+body [data-composer-card] {
+  border-radius: 18px;
+}
+
+/* Jelly glow ring (hidden until focus/running). */
+body [data-composer-card]::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    110deg,
+    body rgba(0, 150, 255, 0) 15%,
+    body rgba(0, 150, 255, 0.9) 38%,
+    body rgba(0, 220, 255, 0.95) 50%,
+    body rgba(0, 150, 255, 0.9) 62%,
+    rgba(0, 150, 255, 0) 85%
+  );
+  background-size: 250% 250%;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Focus: blue border + soft Apple focus halo.
+   0.1.x used textarea:focus; 0.2.1's editor is a contenteditable
+   [data-composer-input] div. */
+body [data-composer-card]:has([data-composer-input]:focus) {
+  border-color: color-mix(in srgb, var(--dsw-alias-state-business-primary, #007AFF) 45%, transparent);
+  box-shadow:
+    body var(--dsw-shadow-lv2),
+    0 0 0 3px color-mix(in srgb, var(--dsw-alias-state-business-primary, #007AFF) 12%, transparent);
+}
+
+/* Running: breathing halo + flowing jelly ring (stop-square rect in the send
+   button is the 0.2.1 running marker — verified in bundle JSX, sent by Lead). */
+body [data-composer-card]:has(rect) {
+  animation: dsh-jelly-breathe 2.6s ease-in-out infinite;
+}
+body [data-composer-card]:has(rect)::after {
+  opacity: 1;
+  animation: dsh-jelly-flow 3.2s linear infinite;
+}
+
+/* Sending: white shimmer. 0.1.x keyed off textarea[data-phase="submitting"];
+   0.2.1's editor is a contenteditable div. The pending state shows as the
+   `.RlGAzG_pending` 8px dot inside the card (`RlGAzG_input-pending` is only a
+   @keyframes name, not a class — do not use it as a selector). */
+body [data-composer-card]:has(.RlGAzG_pending)::after {
+  opacity: 1;
+  background: linear-gradient(
+    110deg,
+    body rgba(255, 255, 255, 0) 15%,
+    body rgba(255, 255, 255, 0.95) 38%,
+    body rgba(190, 235, 255, 1) 50%,
+    body rgba(255, 255, 255, 0.95) 62%,
+    rgba(255, 255, 255, 0) 85%
+  );
+  background-size: 250% 250%;
+  animation: dsh-jelly-send 0.7s ease-in-out infinite;
+}
+
+@keyframes dsh-jelly-breathe {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 160, 255, 0), var(--dsw-shadow-lv2);
+  }
+  50% {
+    box-shadow:
+      0 0 26px 3px rgba(0, 160, 255, 0.32),
+      0 0 64px 10px rgba(70, 190, 255, 0.16),
+      var(--dsw-shadow-lv2);
+  }
+}
+@keyframes dsh-jelly-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 150% 50%;
+  }
+}
+@keyframes dsh-jelly-send {
+  0%, 100% {
+    background-position: 0% 50%;
+    opacity: 0.55;
+  }
+  50% {
+    background-position: 150% 50%;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body [data-composer-card]:has(rect),
+  body [data-composer-card]::after {
+    animation: none;
+  }
+  body [data-composer-card]:has(rect)::after {
+    opacity: 0.55;
+  }
+}
+
+/* ============================================================================
+   §11. SHARED UI KIT — menus / popovers / dialogs / toast / tooltip / pills
+        (dsh-web-frontend index-*.css, family-B modules; see adapter table)
+   body Old: ._list_19372_8/_submenu_19372_9, ._item_19372_91, ._check_19372_181,
+        body ._dialog_15u5s_22, ._confirmation_1nu42_1, ._toast_fvpz7_7,
+        body ._bubble_owhem_8, ._pill_e3ygd_1, ._button_kz6gm_4, ._sm_kz6gm_30,
+        body ._card_1b2ny_13, ._backdrop_18d3q_1, ._close_18d3q_30,
+        ._root_19372_1 (popup select), ._markdown_1nba0_5
+   body NOTE: dialog radius (old 16) is already covered by the radius-panel token,
+   button radius (10) by radius-md, sm button radius (8) by radius-sm. The menu
+   fill + blur are token-driven (--dsw-menu-surface-fill /
+   --dsw-menu-backdrop-filter in tokens.css).
+   ========================================================================== */
+
+/* Finder-style menu surface radius (0.2.1 surface = radius-lg 14 -> old 10).
+   TODO(verify): menu surface menu family is ._surface_ri079_1 (shell CSS). */
+body ._surface_ri079_1 {
+  border-radius: 10px;
+}
+
+/* Menu row height/radius (old normal 28/6, dense 26/5). */
+body ._item_4ub78_90 {
+  min-height: 28px;
+  border-radius: 6px;
+}
+body ._denseList_4ub78_124 ._item_4ub78_90 {
+  min-height: 26px;
+  border-radius: 5px;
+}
+/* Select checkmark: Apple blue (old rule). */
+body ._check_4ub78_179 {
+  color: var(--dsw-alias-state-business-primary, #007AFF);
+}
+
+/* Dialog backdrop: old ._backdrop blurred the page behind a modal. */
+body ._backdrop_19zw2_2 {
+  -webkit-backdrop-filter: var(--dsw-mask-blur);
+  backdrop-filter: var(--dsw-mask-blur);
+}
+/* Old round close button hover. */
+body ._close_19zw2_37:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+/* Toast radius (old 10; 0.2.1 base radius-lg 14). */
+body ._toast_l6cvn_6 {
+  border-radius: 10px;
+}
+
+/* Tooltip bubble radius (old 6; 0.2.1 base radius-sm 8). */
+body ._bubble_12mhf_1 {
+  border-radius: 6px;
+}
+
+/* Status pill radius (old 8; 0.2.1 base 999). */
+body ._pill_1bqmh_1 {
+  border-radius: 8px;
+}
+
+/* Hovercard radius (old 10; 0.2.1 base radius-lg 14). */
+body ._card_38jqx_9 {
+  border-radius: 10px;
+}
+
+/* ============================================================================
+   §12. SMALL REGIONS
+   ========================================================================== */
+
+/* Context/meter bar (old nLMEza_bar radius 10; 0.2.1 999px pill). */
+body ._2WTFBq_bar {
+  border-radius: 10px;
+}
+
+/* Hero workspace trigger + directory modal input (old radius 10). */
+body .Hqq-bq_workspace {
+  border-radius: 10px;
+}
+body .Hqq-bq_modalInput {
+  border-radius: 10px;
+}
+
+/* Tool io card (old o3BgMG_ioCard radius 10; 0.2.1 radius-lg 14). */
+body .pFy1Ka_ioCard {
+  border-radius: 10px;
+}
+
+/* Cordis run rows (old cvtE3a_business 10 / cvtE3a_message 6). */
+body ._3jVEXG_business {
+  border-radius: 10px;
+}
+body ._3jVEXG_message {
+  border-radius: 6px;
+}
+
+/* Directory picker rows (old ZuhsRW_* mapping; base uses interactive-bg-active). */
+body .Fv-y6W_rowSelected,
+body .Fv-y6W_rowSelected:hover {
+  background: rgba(0, 122, 255, 0.14);
+}
+body[data-ds-dark-theme] .Fv-y6W_rowSelected,
+body[data-ds-dark-theme] .Fv-y6W_rowSelected:hover {
+  background: rgba(10, 132, 255, 0.22);
+}
+body .Fv-y6W_createInput {
+  border-radius: 10px;
+}
+body .Fv-y6W_loadingFloat {
+  border-radius: 8px;
+  border: 1px solid var(--dsw-alias-border-l1);
+}
+
+/* ============================================================================
+   §13. DROPPED OLD RULES (documented here + NOTES.md)
+     .fV0t5q_root{background:layer-1}            -> would re-opaque the
+        conversation area shell.css keeps transparent; frost lives in §4.
+     .pI_x6G_frame{background:transparent}       -> superseded by shell.css
+        (.BynINW_frame etc. !important); old frame class no longer exists.
+     .Y0dWHa_table border-spacing / td cards / ::before timeline dots /
+        td::after rail line / .Y0dWHa_table .Y0dWHa_turnRail{display:none}
+        -> 0.2.1 trajectory is a redesigned table with its own turn/selection
+        rails; reference-screenshot intent (boxed badges + blue selection) is
+        ported in §8, the card experiment is not.
+     ._7yHdaG_panel{border-radius:10px 10px 0 0} -> ambiguous map entry
+        (amjGKq_panel = plugin-manager page, not a bottom sheet any more).
+     .bqrRRG_card{border-radius:14px} / .qSYn7G_card{box-shadow:lv1}
+        -> ambiguous card modules; radius-lg token already renders 14px and
+        elevation tokens cover panel shadows.
+     .ydkMvW_section dividers -> ambiguous per-tab section modules; 0.2.1 rows
+        carry their own dividers (e.g. settings-locale .Hefa_q_row).
+     #dsh-bg-canvas{...} -> the canvas is positioned inline by background.js
+        (position:fixed;inset:0;z-index:-1), no CSS needed.
+     ::-webkit-scrollbar{width:6px} -> covered by --dsh-scrollbar-width token.
+     body .VOzbGW/YDXeBa/wSkVaW/... -> all old CSS-module hashes are dead;
+        every rule above uses the 0.2.1 adapter or a semantic hook.
+   ========================================================================== */

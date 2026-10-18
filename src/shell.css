@@ -1,0 +1,146 @@
+/* =============================================================================
+   shell.css — 水中鲸鱼外壳层 + DSH Desktop 窗口适配
+   -----------------------------------------------------------------------------
+   目标版本：DSH 0.2.x（在 Desktop 0.2.1-rc.2 上验证）。
+   职责：
+     1. 让 <canvas id="dsh-bg-canvas">（z-index:-1，body 首个子节点）真正透出来：
+        把 window / frame / 侧边栏 / 会话根节点这些“整屏底板”改为透明或玻璃色。
+     2. 处理 DSH Desktop（Electron）独有的标记：
+          html[data-platform="win32"|"darwin"]   —— 由 preload 写入（lib/preload-app.cjs）
+          html[data-windows-titlebar]           —— Windows 隐藏标题栏模式（40px 拖拽带）
+          --dsh-windows-titlebar-height: 40px
+          html[data-fullscreen]                 —— 全屏时去掉顶部留白
+     3. 保留窗口标题栏拖拽区（-webkit-app-region）与原生窗口按钮的安全区。
+
+   选择器说明（0.2.1-rc.2 构建的 CSS Modules 哈希，升级后可能变化）：
+     .BynINW_frame / _centerCol / _sidebarCol / _rightbarCol / _bottomRow
+        → @deepseek-ai/dsh-client-ui-layout（应用网格骨架）
+     语义钩子（跨版本更稳）：html[data-platform]、html[data-windows-titlebar]、
+        [data-windows-titlebar] 前缀、.dshDesktop 相关由 preload 写入的属性。
+   维护方式：升级 DSH 后若外壳底板变白，只需在下面“版本适配层”里更新哈希前缀。
+   ============================================================================= */
+
+/* ---------------------------------------------------------------------------
+   1. 底板全透明：web 模式与 Desktop 模式一致
+   ------------------------------------------------------------------------- */
+html,
+body,
+#root {
+  background: transparent !important;
+}
+
+/* 0.2.x 的 boot 内联样式会给 body 写 background-color，
+   这里必须用 !important 覆盖，否则整屏 canvas 被白底遮住。 */
+body {
+  background-color: transparent !important;
+  /* 玻璃色（亮/暗）——侧边栏、次级面板共用 */
+  --dsh-aqua-sidebar-light: rgba(242, 242, 247, 0.62);
+  --dsh-aqua-sidebar-dark: rgba(32, 34, 40, 0.62);
+  --dsh-aqua-pane-light: rgba(250, 251, 255, 0.42);
+  --dsh-aqua-pane-dark: rgba(18, 21, 28, 0.42);
+  --dsh-aqua-sidebar: var(--dsh-aqua-sidebar-light);
+  --dsh-aqua-pane: var(--dsh-aqua-pane-light);
+}
+
+body[data-ds-dark-theme] {
+  --dsh-aqua-sidebar: var(--dsh-aqua-sidebar-dark);
+  --dsh-aqua-pane: var(--dsh-aqua-pane-dark);
+}
+
+/* ---------------------------------------------------------------------------
+   2. 应用骨架（@deepseek-ai/dsh-client-ui-layout）
+      原始规则：.BynINW_frame{background:var(--dsw-alias-bg-base)}
+                [data-windows-titlebar] .BynINW_frame{background:var(--dsw-specific-sidebar-fill)}
+                .BynINW_centerCol{background:var(--dsw-alias-bg-base)}
+   ------------------------------------------------------------------------- */
+.BynINW_frame,
+[data-windows-titlebar] .BynINW_frame,
+[data-platform="darwin"] .BynINW_frame {
+  background: transparent !important;
+}
+
+.BynINW_centerCol,
+[data-windows-titlebar] .BynINW_centerCol,
+[data-platform="darwin"] .BynINW_centerCol {
+  background: transparent !important;
+}
+
+.BynINW_sidebarCol,
+[data-platform="darwin"] .BynINW_sidebarCol,
+[data-platform="darwin"] [data-ds-dark-theme] .BynINW_sidebarCol {
+  background: var(--dsh-aqua-sidebar) !important;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+.BynINW_rightbarCol,
+[data-platform="darwin"] .BynINW_rightbarCol {
+  background: var(--dsh-aqua-pane) !important;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+.BynINW_bottomRow {
+  background: var(--dsh-aqua-pane) !important;
+}
+
+/* Windows 隐藏标题栏：40px 拖拽带保持“窗口条”实色并继续可拖动；
+   水位从标题栏下沿开始，避免原生窗口按钮压在水面上产生色差。
+   原生标题栏按钮颜色由 preload 用 --dsw-specific-sidebar-fill 探测后同步，
+   所以这条带子只做轻微水色渐变，不整体改成透明。 */
+[data-windows-titlebar] .BynINW_frame:before {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.05) 60%, rgba(255, 255, 255, 0) 100%),
+    var(--dsw-specific-sidebar-fill) !important;
+  -webkit-app-region: drag;
+}
+
+html[data-windows-titlebar][data-fullscreen] .BynINW_frame {
+  padding-top: 0 !important;
+}
+
+/* ---------------------------------------------------------------------------
+   3. 会话视图底板（@deepseek-ai/dsh-client-ui-conversation）
+      原始规则：.Dc7zOa_root{background:var(--dsw-alias-bg-base)}
+   ------------------------------------------------------------------------- */
+.Dc7zOa_root {
+  background: transparent !important;
+}
+
+/* 会话滚动区/消息区保持透明，让水色透出；具体卡片仍用自己的 token 底色。 */
+.Dc7zOa_header,
+.Dc7zOa_titleRow {
+  background: transparent !important;
+}
+
+/* ---------------------------------------------------------------------------
+   4. Window 拖拽语义（DSH 0.2.x 统一约定）
+      html[data-platform] / [data-window-drag] 由 Web 前端与 preload 维护；
+      这里只保证主题不会破坏拖拽区的点击穿透。
+   ------------------------------------------------------------------------- */
+html[data-platform="darwin"] [data-window-drag],
+html[data-windows-titlebar] .BynINW_frame:before {
+  -webkit-app-region: drag;
+}
+
+/* 侧边栏/会话区内部的交互元素永远不参与窗口拖拽 */
+.BynINW_sidebarCol button,
+.BynINW_sidebarCol input,
+.BynINW_centerCol button,
+.BynINW_centerCol input,
+.Dc7zOa_root button,
+.Dc7zOa_root input {
+  -webkit-app-region: no-drag;
+}
+
+/* ---------------------------------------------------------------------------
+   5. 无障碍：用户要求减少透明/动效时不叠玻璃
+   ------------------------------------------------------------------------- */
+@media (prefers-reduced-transparency: reduce) {
+  .BynINW_sidebarCol,
+  .BynINW_rightbarCol {
+    background: var(--dsw-specific-sidebar-fill) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

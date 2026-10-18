@@ -1,8 +1,10 @@
 # AI 部署提示词
 
+> ⚠️ **仅适用于 DSH 0.1.x（2026-08 的 Harmony 早期版本）**。DSH 0.2.x / Desktop 版请直接按 README 的插件方式安装；0.2.x 的前端结构已重写，下面的 dist 补丁方式会破坏页面加载（0.2.x 用 `dsh-app://app/` 自定义协议提供前端，不再是可随意改的 dist 目录）。
+
 > 把下面代码块中的全部内容**原样复制**给你的 AI(DeepSeek Harness、Claude Code、ChatGPT 等均可),让它执行部署。
 
-> **提示**:如果目标机器的 DeepSeek Harness 支持插件系统,推荐直接用**插件方式**安装(见仓库 README「🧩 插件方式安装」):`dsh plugin --profile web add https://github.com/dataizu/dsh-whale-aqua-theme`,一条命令完成、不修改任何 dist 文件。以下提示词用于传统 dist 补丁部署。
+> **提示**:如果目标机器的 DeepSeek Harness 支持插件系统,推荐直接用**插件方式**安装(见仓库 README「🧩 安装」):`dsh plugin --profile desktop add https://github.com/dataizu/dsh-whale-aqua-theme`,一条命令完成、不修改任何 dist 文件。以下提示词用于传统 dist 补丁部署。
 
 ````markdown
 # 任务:给本机的 DeepSeek Harness Web GUI 安装「macOS 主题 + 水中鲸鱼背景」

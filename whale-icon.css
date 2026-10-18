@@ -1,9 +1,28 @@
-/* Permanent DeepSeek whale send icon (deployment-local customization).
-   The dot-matrix canvas overlay (attached by the background script) renders
-   the whale; the original SVG stays hidden in the DOM — its <rect> is what
-   marks the running state for :has() selectors and the canvas probe.
-   Running state: underwater swim + bubbles + pulsing halo.
-   Revert: delete this file and remove its <link> in index.html. */
+/* =============================================================================
+   whale-icon.css — dot-matrix whale send button (DSH 0.2.1-rc.2 verified)
+   -----------------------------------------------------------------------------
+   Ported from dsh-whale-aqua-theme (0.1.x) src/whale-icon.css — the selectors are
+   unchanged because 0.2.1 kept the contract the original was written against:
+
+     [data-composer-card]              runtime: <div class="RlGAzG_card"
+                                       data-composer-card="true">  (composer card)
+     button[class*="_primary"]         runtime: <button class="RlGAzG_primary">
+                                       (send/stop button, 34x34 circle)
+     :has(rect)                        running state = the button's svg swaps the
+                                       arrow path for the stop-square <rect>
+                                       (bundle JSX; confirmed by Lead/verifier)
+     canvas                            background.js appends a dot-matrix whale
+                                       <canvas> overlay into the button; the
+                                       original SVG is hidden by this file.
+
+   MERGE TARGET : src/whale-icon.css (first CSS injected, before tokens/shell/
+   regions). No external assets.
+
+   TODO(verify): the old bubble positions (left 8.75px / top 6.3px, 3.5px) were
+   tuned on the 0.1.x button; the 0.2.1 button is 34x34 with a 999px radius. If
+   the bench shows bubbles drifting outside the halo, nudge left/top only here.
+   ============================================================================= */
+
 [data-composer-card] button[class*="_primary"] {
   position: relative;
 }

@@ -1,33 +1,16 @@
 # 🐋 鲸蓝戏水 · DSH Whale Aqua Theme
 
-给 [DeepSeek Harness](https://www.deepseek.com) Web GUI 用的 **macOS 风格主题 + 水中鲸鱼动态背景**。
-适用于本地运行的 DeepSeek Harness Web 界面。
+给 [DeepSeek Harness](https://www.deepseek.com) 用的 **macOS 风格主题 + 水中鲸鱼动态背景 + 点阵鲸鱼发送按钮**，以 DSH 插件形式安装，支持 **Desktop 桌面版**与 Web 版。
+
+> **当前版本 v2.0.0**：已适配 DeepSeek Harness **0.2.x（Desktop 0.2.1-rc.2 实测）**。旧版 v1.x 仅适用于 0.1.x（Harmony 早期版本）。兼容性细节与改造记录见 [COMPATIBILITY.md](COMPATIBILITY.md)。
 
 ## 🖼️ 预览
 
-> 截图与动图来自仓库内 `demo/preview.html`(纯演示页,使用真实主题 CSS 与背景脚本,内容为虚构示例)。
+> 主题在真实 DSH 中的效果（截图来自本地 DSH Desktop / Web 运行实例）。
 
-### 🎬 动态效果(鲸鱼游动 + 气泡 + 喷水 + 水母发光)
-
-![动态预览](screenshots/whale-animation.gif)
-
-### 浅色模式(运行中)
+### 浅色模式
 
 ![浅色模式](screenshots/light.png)
-
-### 鲸鱼发送按钮(三种状态)
-
-未发送(空闲,静态鲸鱼):
-
-![未发送](screenshots/button-idle.png)
-
-输入文字时(鲸鱼保持静态,仅输入框有内容):
-
-![输入文字](screenshots/button-typing.png)
-
-发送之后(运行中:摆尾游动 + 喷水泡 + 蓝色呼吸光环 + 水母发光):
-
-![发送之后](screenshots/button-running.png)
 
 ### 深色模式
 
@@ -41,158 +24,117 @@
 
 ![轨迹视图](screenshots/trajectory.png)
 
+### 鲸鱼发送按钮
+
+未发送（空闲，静态鲸鱼）：
+
+![未发送](screenshots/button-idle.png)
+
+发送之后（运行中：摆尾游动 + 喷水泡 + 蓝色呼吸光环 + 水母发光）：
+
+![发送之后](screenshots/button-running.png)
+
+### 动态效果
+
+![动态预览](screenshots/whale-animation.gif)
+
+> `demo/preview.html` 是纯静态演示页（使用主题 CSS 与背景脚本，内容为虚构示例），可作为离线预览；它保留的是 0.1.x 时代的界面结构，仅用于看视觉效果。
+
 ## ✨ 效果一览
 
-- **水中鲸鱼背景**:极淡水色渐变(底部透明)+ 上升气泡(水面爆开)+ 点阵鲸鱼巡游(S 形行进波、尾部大摆、受惊吐泡)
-- **鲸鱼发送按钮**:官方鲸鱼剪影,空闲静态;运行时头顶喷水泡 + 蓝色呼吸光环(选择器已做跨版本兼容)
-- **苹果风皮肤**:macOS 配色(明/暗双主题)、克制圆角、毛玻璃菜单、Finder 式选中、水母发光输入框、磨砂对话区、设置面板统一化、轨迹彩色方框徽章
-- 低开销:DPR 1.25、24fps、失焦/隐藏自动暂停、按钮动画按需绘制
+- **水中鲸鱼背景**：极淡水色渐变（底部透明）+ 上升气泡（水面爆开）+ 点阵鲸鱼巡游（S 形行进波、尾部大摆、受惊吐泡）
+- **鲸鱼发送按钮**：官方鲸鱼剪影，空闲静态；运行时头顶喷水泡 + 蓝色呼吸光环
+- **苹果风皮肤**：macOS 配色（明/暗双主题）、克制圆角、毛玻璃菜单、Finder 式选中、水母发光输入框、磨砂对话区、设置面板统一化、轨迹彩色方框徽章
+- **Desktop 适配**：正确处理 Electron 窗口的透明底板、Windows 40px 标题栏拖拽带、窗口按钮取色；水景从标题栏下方开始，不遮挡原生窗口控件
+- **低开销**：DPR 1.25、24fps、失焦/隐藏自动暂停、按钮动画按需绘制
+- **可随时停用**：不改任何 `dist` 文件，插件停止即移除 `<style>`、canvas、监听与动画循环
 
-## ⚠️ 版本兼容性(必读)
+## 📋 版本兼容性
 
-本主题分两部分,兼容性不同:
+| DSH 版本 | 主题版本 | 说明 |
+| --- | --- | --- |
+| **0.2.x（含 Desktop 桌面版）** | **v2.0.0** | 当前版本，实测 0.2.1-rc.2 |
+| 0.1.x（Harmony 早期 Web 版） | v1.0.0 | 旧版，已归档标签 |
 
-| 部分 | 跨 DSH 版本兼容性 |
-| --- | --- |
-| **背景动画 + 发送按钮鲸鱼**(index.html 脚本、whale-icon.css) | ✅ **任意版本可用**——只依赖稳定 DOM 特征(`data-composer-card` 属性、`_primary` 类后缀、canvas) |
-| **皮肤样式 apple-style.css**(侧边栏/设置/轨迹等) | ⚠️ **依赖编译类名**——不同 DSH 版本的 CSS 类名哈希不同,可能部分或全部不生效 |
+0.2.x 相对 0.1.x 重写了整个前端（组件、类名、Desktop 外壳），因此 v2 不是“改几个选择器”，而是重做了皮肤层：
 
-如果某部分皮肤没生效:在该页面按 F12 → 用选择器检查目标元素的实际类名(形如 `xYz123_row`),把 `apple-style.css` 中对应的哈希前缀替换成你版本里的前缀即可(类名后缀如 `_row` 是稳定的)。
+- **插件加载**：`client.js` 的模块注册 id 必须等于包名（`dsh-whale-aqua-theme`），否则 0.2.x 会拒绝加载并显示 “Failed to load plugins”；
+- **皮肤**：96 个旧 CSS Modules 类名在 0.2.x 全部失效，v2 按新组件重写，并优先使用语义钩子（`[data-conversation-tabs]`、`[role=treeitem][aria-selected]`、`[data-variant=think]`、`[data-kind]` 等），把不可避免的哈希类名集中在一个“版本适配层”里；
+- **仍原样可用**：设计令牌 `--dsw-*`、`body[data-ds-dark-theme]`、`[data-composer-card]`、`button[class*="_primary"]`、`:has(rect)` 运行态判断 → 背景动画与鲸鱼发送按钮无需重写。
 
-## 🧩 插件方式安装(首选,免改 dist)
+未来 DSH 升级后若皮肤部分失效，通常只需更新 [`COMPATIBILITY.md`](COMPATIBILITY.md) 第 4 节描述的哈希映射；语义选择器部分一般不受影响。
 
-本仓库同时是一个标准的 DSH 插件包(`package.json` 声明 `dsh.bundle` manifest)。插件形态下,主题随 profile 安装、停用、卸载,**不改动任何 dist 文件**,DSH 升级不受影响;背景动画的全部副作用(canvas、window 监听、动画循环、按钮 canvas)都纳入了插件生命周期管理,停止插件即完全回收。
+## 🧩 安装
 
-**方式一:插件市场** —— 本主题已提交 [awesome-dsh-plugin](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin) 收录,通过审核后可在 dshmarket 插件市场的「🎭 主题与外观」Tab 一键安装/切换/卸载。
+本仓库是一个标准 DSH 插件包（`package.json` 声明 `dsh.bundle` manifest 与 `dsh.client` 浏览器面）。
 
-**方式二:命令行安装**
+**方式一：插件市场**
+
+在 dshmarket 插件市场的「🎭 主题与外观」Tab 中一键安装 / 切换 / 卸载（已提交 awesome-dsh-plugin 收录）。
+
+**方式二：命令行**
 
 ```sh
+# Desktop 桌面版（profile 名为 desktop）
+dsh plugin --profile desktop add https://github.com/dataizu/dsh-whale-aqua-theme
+
+# Web 版（dsh web，profile 名为 web）
 dsh plugin --profile web add https://github.com/dataizu/dsh-whale-aqua-theme
 ```
 
-安装完成后重启 DSH 生效;删除 profile `cordis.patch.yml` 中 `id: dsh-whale-aqua` 的 `insert` 行(或在市场中移除)即可停用。
+安装完成后重启 DSH 生效。停用：删除 profile 的 `cordis.patch.yml` 中 `id: dsh-whale-aqua` 的 `insert` 行（或在市场中移除）。
 
-## 🤖 一键 AI 部署(传统 dist 方式)
+> ⚠️ 不要同时启用多个皮肤类插件（例如 open-sea-skin）：两套皮肤会互相覆盖。
 
-> 如果你的 DeepSeek Harness 支持插件系统,**优先使用上面的插件方式安装**——一条命令、不改任何 dist 文件、可随时停用。以下提示词适用于不想引入插件系统的场景。
+## 🛠️ 开发
 
-把下面代码块**原样复制**给你的 AI(DeepSeek Harness / Claude Code / ChatGPT 均可),让它自动完成定位、备份、复制和拼接,任何 DSH 版本都可执行:
-
-````markdown
-# 任务:给本机的 DeepSeek Harness Web GUI 安装「macOS 主题 + 水中鲸鱼背景」
-
-请按以下步骤完成部署。只改 DSH 的 Web 静态文件,不修改源码、不重启服务、不破坏原有文件(先备份)。
-
-## 第 1 步:定位 Web 前端目录
-找到 DeepSeek Harness 的 Web 静态资源目录(特征:包含 index.html,路径形如
-`.../node_modules/@deepseek-ai/dsh-web-frontend/dist/`),记为 `<DIST>`。
-查找顺序:
-1. 询问用户 DSH 的部署位置,在其下找 `dist/index.html`;
-2. 全局搜索名为 `dsh-web-frontend` 的目录
-   (Windows:`where /r C:\ dsh-web-frontend` 或按用户指定盘符;macOS/Linux:`find / -type d -name "dsh-web-frontend" 2>/dev/null`);
-3. 若仍找不到,请停下来询问用户路径,不要瞎猜。
-
-## 第 2 步:获取主题文件
-执行 `git clone https://github.com/dataizu/dsh-whale-aqua-theme` 到临时目录(记为 `<THEME>`)。
-若网络受限,让用户手动下载该仓库的 zip 并解压,继续后面的步骤。
-
-## 第 3 步:备份原文件
-```
-cp <DIST>/index.html <DIST>/index.html.bak
-cp <DIST>/apple-style.css <DIST>/apple-style.css.bak 2>/dev/null || true
-cp <DIST>/whale-icon.css <DIST>/whale-icon.css.bak 2>/dev/null || true
+```sh
+# 编辑 src/*.css、src/background.js 等源文件后重新生成 client.js
+node scripts/build-client.mjs
 ```
 
-## 第 4 步:复制样式文件
-```
-cp <THEME>/apple-style.css  <DIST>/apple-style.css
-cp <THEME>/whale-icon.css   <DIST>/whale-icon.css
-```
+| 源文件 | 作用 |
+| --- | --- |
+| `src/whale-icon.css` | 发送按钮鲸鱼图标与喷水动画 |
+| `src/tokens.css` | Apple 设计令牌层（明/暗两套，含 0.2.x 必需令牌） |
+| `src/shell.css` | 水景透明外壳层 + Desktop 窗口适配（Windows 标题栏拖拽带等） |
+| `src/regions.css` | 分区皮肤（侧边栏/会话/输入框/设置/轨迹/弹层），顶部为“0.2.1 版本适配层” |
+| `src/background.js` | 水中鲸鱼背景 + 发送按钮点阵鲸鱼（生命周期可回收） |
+| `src/apply.js` | 浏览器面插件入口：注入样式、启动背景 |
 
-## 第 5 步:把背景动画脚本拼进 index.html(幂等,可重复执行)
-读取 `<DIST>/index.html` 后:
-1. 若其中已包含 `whale-icon.css` 字样 → 跳过链接插入;否则在 `</head>` 之前插入两行:
-   ```
-   <link rel="stylesheet" href="/whale-icon.css" />
-   <link rel="stylesheet" href="/apple-style.css" />
-   ```
-2. 若其中已包含 `dsh-bg-canvas` 字样 → 跳过脚本插入;否则把
-   `<THEME>/install/background-snippet.html` 中 HTML 注释以下的**整个** `<script>...</script>` 块,
-   插入到 `</body>` 之前。
-3. 保存文件。
-
-## 第 6 步:校验
-1. 确认 `<DIST>` 下三个文件存在且非空;
-2. 提取 index.html 中 `<script>` 的内容存为临时 .js,若本机有 node 则执行 `node --check` 校验语法;
-3. 检查 index.html 里引用的 `/assets/*.js`、`/assets/*.css` 文件名,与 `<DIST>/assets/` 目录下的实际文件是否一致:
-   - 一致 → 全部功能可用;
-   - 不一致 → 说明本机 DSH 版本与主题开发版不同:**背景动画和鲸鱼发送按钮仍可用**,但皮肤
-     `apple-style.css`(侧边栏/设置面板/轨迹样式)可能部分不生效。此时读取本机
-     `dsh-web-frontend` 包目录下 package.json 的 `version` 字段,把版本号报告给用户,
-     并说明"把该版本号反馈给主题作者即可生成适配版皮肤"。
-
-## 第 7 步:验证与报告
-1. 提醒用户硬刷新页面(Ctrl+Shift+R)查看效果;
-2. 报告以下信息:定位到的 `<DIST>` 路径、执行了哪些修改、备份文件位置、DSH 前端版本号、是否有"皮肤可能不生效"的提示。
-````
-
-> 该提示词也保存在仓库根目录的 `AI_DEPLOY_PROMPT.md`,方便单独复制。
-
-## 🚀 手动安装方法
-
-### 方法 A:补丁式安装(推荐,任意 DSH 版本)
-
-1. 找到 DSH 的 Web 前端目录,通常形如:
-   ```
-   <你的 DSH 部署目录>/node_modules/@deepseek-ai/dsh-web-frontend/dist/
-   ```
-2. 复制 `apple-style.css`、`whale-icon.css` 到该 `dist` 目录。
-3. 打开该目录下的 `index.html`(目标机器自己的,不要用本仓库的覆盖!),做两处修改:
-   - 在 `<head>` 里加两行:
-     ```html
-     <link rel="stylesheet" href="/whale-icon.css" />
-     <link rel="stylesheet" href="/apple-style.css" />
-     ```
-   - 把 `install/background-snippet.html` 里的整个 `<script>...</script>` 块复制到 `</body>` 之前。
-4. 硬刷新(`Ctrl+Shift+R`)。
-
-### 方法 B:整页覆盖(仅限与开发版本相同的 DSH 构建)
-
-把 `same-version/index.html` 与两个 CSS 一起覆盖到 `dist`。
-> 不同版本的 DSH 前端资源文件名不同,直接覆盖会导致界面无法加载——所以默认请不要用这个方法。
-
+`client.js` 由上述文件生成，请勿直接编辑。
 
 ## 📁 文件清单
 
 | 文件 | 作用 |
 | --- | --- |
-| `package.json` / `cordis.patch.yml` | 插件包声明(`dsh.bundle` manifest 与插入行,供插件系统/市场一键安装) |
-| `index.js` / `client.js` | 插件宿主面 / 浏览器面(两个 CSS 全文内嵌;背景动画脚本已移植为带生命周期清理的版本) |
-| `apple-style.css` | macOS 皮肤全套(配色、分区样式、水母发光、磨砂对话区) |
-| `whale-icon.css` | 发送按钮鲸鱼图标与喷水动画(跨版本) |
-| `install/background-snippet.html` | 背景动画脚本补丁(跨版本,拼进自己的 index.html) |
-| `same-version/index.html` | 完整页面(仅同版本构建可用) |
-| `whale-path.txt` | DeepSeek 官方鲸鱼 SVG path 的压缩版(3 位小数,点阵采样数据源) |
-| `template.html` | index.html 模板(鲸鱼 path 用 `__WHALE_PATH__` 占位) |
+| `package.json` / `cordis.patch.yml` | 插件包声明（`dsh.bundle` manifest 与插入行） |
+| `index.js` / `client.js` | 插件宿主面 / 浏览器面（生成的 bundle） |
+| `src/` + `scripts/build-client.mjs` | 皮肤源码与构建脚本 |
+| `apple-style.css` / `whale-icon.css` | 旧版 dist 补丁方式使用的合并样式（0.1.x 兼容，v2 由构建脚本生成） |
+| `COMPATIBILITY.md` | 0.2.x / Desktop 兼容性报告与改造、维护指南 |
+| `docs/0.2.1-selector-map.json` | 0.1.x → 0.2.1 完整选择器映射（升级维护用） |
+| `install/background-snippet.html` | 0.1.x 时代的背景脚本补丁（旧 dist 方式） |
+| `whale-path.txt` | DeepSeek 官方鲸鱼 SVG path 的压缩版（点阵采样数据源） |
 | `reference/hero-whale.svg` | 官方 hero 鲸鱼 SVG 参考 |
 
 ## 🎚️ 常见调参点
 
 | 想调什么 | 在哪里 |
 | --- | --- |
-| 发送按钮喷水位置/大小 | `whale-icon.css` 中 `::before` / `::after`(两粒水泡)的 `left/top/width/height` |
-| 输入框发光强弱/流速 | `apple-style.css` 中 `dsh-jelly-breathe` / `dsh-jelly-flow` 关键帧 |
-| 对话区毛玻璃透明度/模糊 | `apple-style.css` 中 `body .Md3f7G_scroll` |
-| 背景气泡数量/大小/速度 | `install/background-snippet.html` 脚本中 `BUB_CAP`、`newBubble` |
-| 鲸鱼游速/摆幅/受惊 | 同脚本中 `updateWhale` 与 `whaleWave` 相关参数 |
-| 性能档位(DPR/帧率) | 同脚本中 `DPR = Math.min(..., 1.25)` 与 `ts - lastT < 41` |
+| 发送按钮喷水位置/大小 | `src/whale-icon.css` 中 `::before` / `::after`（两粒水泡）的 `left/top/width/height` |
+| 输入框发光强弱/流速 | `src/regions.css` 中 `dsh-jelly-breathe` / `dsh-jelly-flow` 关键帧 |
+| 对话区毛玻璃透明度/模糊 | `src/regions.css` 中 `[data-conversation-scroll]` 的磨砂规则 |
+| 侧边栏 / 底板玻璃色 | `src/shell.css` 中 `--dsh-aqua-sidebar` / `--dsh-aqua-pane` |
+| 背景气泡数量/大小/速度 | `src/background.js` 中 `BUB_CAP`、`newBubble` |
+| 鲸鱼游速/摆幅/受惊 | 同文件 `updateWhale` 与 `whaleWave` 相关参数 |
+| 性能档位（DPR/帧率） | 同文件 `DPR = Math.min(..., 1.25)` 与 `ts - lastT < 41` |
 
 ## 📄 许可与声明
 
-- 样式与脚本代码:**MIT License**(见 `LICENSE`)。
-- **DeepSeek 鲸鱼图形为 DeepSeek 官方资产**,版权归 DeepSeek 所有;本仓库仅用于个人主题美化,请勿商用。
+- 样式与脚本代码：**MIT License**（见 `LICENSE`）。
+- **DeepSeek 鲸鱼图形为 DeepSeek 官方资产**，版权归 DeepSeek 所有；本仓库仅用于个人主题美化，请勿商用。
 
 ---
 
-English / 简体中文双语说明,欢迎 PR 与 Issue。
+English / 简体中文双语说明，欢迎 PR 与 Issue。
