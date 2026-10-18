@@ -1,6 +1,6 @@
 {
   "name": "dsh-whale-aqua-theme",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "鲸蓝戏水：DeepSeek Harness 的 macOS 风格皮肤 + 水中鲸鱼动态背景 + 点阵鲸鱼发送按钮（可安装 DSH 插件包，适配 DSH 0.2.x / Desktop 版）",
   "license": "MIT",
   "repository": {
@@ -20,13 +20,17 @@
   "main": "index.js",
   "exports": {
     ".": "./index.js",
-    "./client": "./client.js"
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon.svg": "./icon.svg"
   },
   "files": [
     "index.js",
     "client.js",
     "cordis.patch.yml",
-    "src"
+    "src",
+    "icon.svg",
+    "locale/*.json"
   ],
   "scripts": {
     "build": "node scripts/build-client.mjs"
@@ -38,5 +42,6 @@
     "client": {
       "platform": "web"
     }
-  }
+  },
+  "icon": "./icon.svg"
 }
