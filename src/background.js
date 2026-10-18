@@ -61,10 +61,10 @@ var WHALE = 'M22.917 1.43C22.671 1.31 22.566 1.539 22.422 1.655C22.373 1.693 22.
   function pal() {
     var dark = document.body.hasAttribute('data-ds-dark-theme');
     return {
-      waterTop: dark ? 'rgba(100,135,255,0.12)' : 'rgba(110,140,255,0.10)',
-      waterMid: dark ? 'rgba(80,115,240,0.05)' : 'rgba(90,120,240,0.04)',
+      waterTop: dark ? 'rgba(100,135,255,0.16)' : 'rgba(110,140,255,0.14)',
+      waterMid: dark ? 'rgba(80,115,240,0.07)' : 'rgba(90,120,240,0.06)',
       waterBot: 'rgba(90,120,240,0)',
-      surface: dark ? 'rgba(175,205,255,0.26)' : 'rgba(155,185,255,0.22)',
+      surface: dark ? 'rgba(175,205,255,0.30)' : 'rgba(155,185,255,0.26)',
       bubble: dark ? '150,185,255' : '95,135,255',
       whale: dark ? '150,185,255' : '95,135,255'
     };

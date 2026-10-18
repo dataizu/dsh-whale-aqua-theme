@@ -207,14 +207,30 @@ body [data-conversation-tabs] button[role="tab"]:after {
    PLATE EXCEPTION (report to Lead): .Dc7zOa_composerSeat keeps 0.2.1's sticky
    gradient painted with --dsw-alias-bg-base (#FFFFFF); the optional de-seam
    override is documented in NOTES.md §4 and is NOT shipped until verified.
+   ---------------------------------------------------------------------------
+   2026-10-18 v2.1: the previous rgba(255,255,255,.72) + blur(18px) frost was
+   too opaque — the aquarium was invisible in the message area (the exact
+   regression the author reported). The conversation surface is now a light
+   WATER VEIL so the canvas (water gradient + bubbles + whale) reads through,
+   while assistant text keeps contrast on the pale water.
    ========================================================================== */
 body [data-conversation-session] [data-conversation-scroll] {
-  background: rgba(255, 255, 255, 0.72);
-  -webkit-backdrop-filter: blur(18px) saturate(170%);
-  backdrop-filter: blur(18px) saturate(170%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.26) 38%,
+    rgba(238, 245, 255, 0.20) 100%
+  );
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 body[data-ds-dark-theme] [data-conversation-session] [data-conversation-scroll] {
-  background: rgba(28, 28, 30, 0.78);
+  background: linear-gradient(
+    180deg,
+    rgba(8, 10, 16, 0.26) 0%,
+    rgba(10, 12, 19, 0.38) 45%,
+    rgba(12, 15, 22, 0.30) 100%
+  );
 }
 
 /* ============================================================================
@@ -750,3 +766,197 @@ body .Fv-y6W_loadingFloat {
      body .VOzbGW/YDXeBa/wSkVaW/... -> all old CSS-module hashes are dead;
         every rule above uses the 0.2.1 adapter or a semantic hook.
    ========================================================================== */
+
+/* ============================================================================
+   §15. 0.2.x DESKTOP EXTRAS (v2.1, 2026-10-18)
+   Surfaces that did not exist (or were not covered) in the 0.1.x skin.
+   All classes below were verified in the installed 0.2.1-rc.2 bundles:
+     .Dc7zOa_header*      dsh-client-ui-conversation/ConversationRoot
+     .xz4KEq_running      dsh-client-ui-chat/ChatView
+     [data-tool] / card   dsh-client-ui-tool + per-tool modules
+     .OUqwTW_*            dsh-client-ui-sidebar-right
+     ._2WTFBq_bar         dsh-client-ui-context (meter)
+   ========================================================================== */
+
+/* Header chips (agent team / mode / subagent count / background jobs):
+   quiet macOS pills instead of bare text buttons. */
+body .Dc7zOa_headerActions button,
+body .Dc7zOa_headerUtilities button,
+body .Dc7zOa_headerCorner button,
+body [data-slot="conversation.session.header.utilities"] button,
+body [data-slot="conversation.session.header.corner"] button {
+  border-radius: 999px !important;
+  padding: 4px 10px !important;
+  min-height: 26px;
+  font-size: 12px !important;
+  color: var(--dsw-alias-label-secondary);
+  transition: background-color .16s var(--ds-ease-in-out), color .16s var(--ds-ease-in-out);
+}
+body .Dc7zOa_headerActions button:hover,
+body .Dc7zOa_headerUtilities button:hover,
+body .Dc7zOa_headerCorner button:hover,
+body [data-slot="conversation.session.header.utilities"] button:hover,
+body [data-slot="conversation.session.header.corner"] button:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
+/* Running strip: floating frosted pill instead of a full-width bar. */
+body .xz4KEq_running {
+  margin: 4px auto 10px;
+  padding: 5px 14px;
+  width: fit-content;
+  max-width: 80%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--dsw-alias-bg-layer-1) 78%, transparent);
+  border: 1px solid var(--dsw-alias-border-l1);
+  box-shadow: var(--dsw-shadow-lv1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* Tool cards (read/write/edit/pwsh/…): macOS inset surface. */
+body [data-tool] [class*="_card"] {
+  border-radius: 12px;
+  border: 1px solid var(--dsw-alias-border-l1);
+}
+
+/* Markdown: code blocks / inline code / tables get the same radii as the rest. */
+body ._markdown_1ypvv_5 pre {
+  border-radius: 12px;
+  border: 1px solid var(--dsw-alias-border-l2);
+}
+body ._markdown_1ypvv_5 :not(pre) > code {
+  border-radius: 5px;
+  padding: 1px 5px;
+  background: var(--dsw-alias-bg-module-platform);
+}
+body ._markdown_1ypvv_5 table {
+  border: 1px solid var(--dsw-alias-border-l1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Queue dock / context meter: rounded, quiet. */
+body [data-queue-dock] {
+  border-radius: 12px;
+}
+body ._2WTFBq_bar {
+  border-radius: 10px;
+}
+
+/* Right sidebar (session details / files): let the aquarium glass through. */
+body .OUqwTW_panel,
+body .OUqwTW_panelBody,
+body .OUqwTW_tabBody {
+  background: transparent !important;
+}
+
+/* Sidebar footer: hairline separator above "更多". */
+body ._2H3hWW_footArea {
+  border-top: 1px solid var(--dsw-alias-border-l1);
+}
+
+/* Composer seat: replace the opaque sticky gradient with a soft fade, so the
+   water keeps flowing under the input bar (was a visible seam on Desktop). */
+body [data-composer-seat],
+body .Dc7zOa_composerSeat {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.35) 55%,
+    rgba(255, 255, 255, 0.5) 100%
+  ) !important;
+}
+body[data-ds-dark-theme] [data-composer-seat],
+body[data-ds-dark-theme] .Dc7zOa_composerSeat {
+  background: linear-gradient(
+    180deg,
+    rgba(10, 12, 19, 0) 0%,
+    rgba(10, 12, 19, 0.45) 55%,
+    rgba(10, 12, 19, 0.6) 100%
+  ) !important;
+}
+
+/* Windows 40px window-chrome band: keep it solid for the native caption probe
+   but let a hint of water sit at its top edge. (Same selector as shell.css;
+   regions.css is injected later, so this wins.) */
+[data-windows-titlebar] .BynINW_frame:before {
+  background:
+    linear-gradient(180deg, rgba(206, 224, 255, 0.60) 0%, rgba(242, 242, 247, 0) 72%),
+    var(--dsw-specific-sidebar-fill) !important;
+}
+body[data-ds-dark-theme][data-windows-titlebar] .BynINW_frame:before,
+[data-ds-dark-theme] [data-windows-titlebar] .BynINW_frame:before {
+  background:
+    linear-gradient(180deg, rgba(56, 78, 136, 0.45) 0%, rgba(44, 44, 46, 0) 72%),
+    var(--dsw-specific-sidebar-fill) !important;
+}
+
+/* Secondary full-page surfaces (schedule page, account overlay): transparent so
+   the aquarium reads through instead of a flat white sheet. */
+body .S0jZwq_page,
+body .TaJwIq_overlay {
+  background: transparent !important;
+}
+
+/* Schedule page filter tabs: iOS segmented pill (same treatment as view tabs). */
+body .S0jZwq_filterTabs {
+  background: var(--dsw-alias-bg-module-platform);
+  border: 1px solid var(--dsw-alias-border-l1);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 0;
+}
+body .S0jZwq_filterTab {
+  border-radius: 999px;
+  padding: 5px 14px;
+  height: 28px;
+  color: var(--dsw-alias-label-primary);
+}
+body .S0jZwq_filterTab:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+body .S0jZwq_filterTabActive,
+body .S0jZwq_filterTabActive:hover {
+  background: var(--dsw-alias-button-info-fill);
+  color: #FFFFFF;
+}
+
+/* Message row extras: turn summary chip, inline file links, hover actions,
+   image frames, "open with" buttons. Classes from dsh-client-ui-chat /
+   dsh-client-ui-tool / dsh-client-ui-attachment in 0.2.1-rc.2. */
+body ._4AI11G_root {
+  border-radius: 999px;
+  padding: 3px 10px;
+  margin-left: -10px;
+  color: var(--dsw-alias-label-tertiary);
+  transition: background-color .15s var(--ds-ease-in-out);
+}
+body ._4AI11G_root:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+body .WW4l1q_title {
+  color: var(--dsw-alias-label-secondary);
+}
+body .pFy1Ka_fileLink {
+  border-radius: 6px;
+  padding: 1px 6px;
+  background: var(--dsw-alias-bg-module-platform);
+  text-decoration: none;
+}
+body .pFy1Ka_fileLink:hover {
+  background: var(--dsw-alias-interactive-bg-hover-solid);
+}
+body .xD_KDq_action,
+body .vpunvW_action {
+  border-radius: 7px;
+}
+body .Nhu-QW_frame {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--dsw-alias-border-l1);
+}
+body .WgQWqa_main {
+  border-radius: 8px;
+}

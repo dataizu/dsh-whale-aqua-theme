@@ -2,7 +2,7 @@
 
 给 [DeepSeek Harness](https://www.deepseek.com) 用的 **macOS 风格主题 + 水中鲸鱼动态背景 + 点阵鲸鱼发送按钮**，以 DSH 插件形式安装，支持 **Desktop 桌面版**与 Web 版。
 
-> **当前版本 v2.0.0**：已适配 DeepSeek Harness **0.2.x（Desktop 0.2.1-rc.2 实测）**。旧版 v1.x 仅适用于 0.1.x（Harmony 早期版本）。兼容性细节与改造记录见 [COMPATIBILITY.md](COMPATIBILITY.md)。
+> **当前版本 v2.1.0**：已适配 DeepSeek Harness **0.2.x（Desktop 0.2.1-rc.2 实测）**。v2.1 恢复「对话区水中背景」可见性，并补齐桌面端新增元素（窗口标题栏、头部胶囊、运行状态条、工具卡、代码块、自动化任务页等）。旧版 v1.x 仅适用于 0.1.x（Harmony 早期版本）。兼容性细节与改造记录见 [COMPATIBILITY.md](COMPATIBILITY.md)。
 
 ## 🖼️ 预览
 
