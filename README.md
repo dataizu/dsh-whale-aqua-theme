@@ -2,7 +2,7 @@
 
 给 [DeepSeek Harness](https://www.deepseek.com) 用的 **macOS 风格主题 + 水中鲸鱼动态背景 + 点阵鲸鱼发送按钮**，以 DSH 插件形式安装，支持 **Desktop 桌面版**与 Web 版。
 
-> **当前版本 v2.1.0**：已适配 DeepSeek Harness **0.2.x（Desktop 0.2.1-rc.2 实测）**。v2.1 恢复「对话区水中背景」可见性，并补齐桌面端新增元素（窗口标题栏、头部胶囊、运行状态条、工具卡、代码块、自动化任务页等）。旧版 v1.x 仅适用于 0.1.x（Harmony 早期版本）。兼容性细节与改造记录见 [COMPATIBILITY.md](COMPATIBILITY.md)。
+> **当前版本 v2.2.0**：已适配 DeepSeek Harness **0.2.x（Desktop 0.2.1-rc.2 实测）**。v2.2 把皮肤升级为「珍珠玻璃」质感：设置面板按 macOS Tahoe System Settings 重做（独立圆角导航、分类彩色图标、分组卡片、胶囊下拉）、顶部新增日/月天空与海鸥、背景鲸鱼恢复官方轮廓并加入水面倒影/尾摆传播；同时优化了性能（去掉大范围 blur、发送按钮改为 MutationObserver 驱动、背景 rAF 可暂停）并补充了 Node 回归测试。旧版 v1.x 仅适用于 0.1.x（Harmony 早期版本）。兼容性细节与改造记录见 [COMPATIBILITY.md](COMPATIBILITY.md)。
 
 ## 🖼️ 预览
 
@@ -53,7 +53,7 @@
 
 | DSH 版本 | 主题版本 | 说明 |
 | --- | --- | --- |
-| **0.2.x（含 Desktop 桌面版）** | **v2.0.0** | 当前版本，实测 0.2.1-rc.2 |
+| **0.2.x（含 Desktop 桌面版）** | **v2.2.0** | 当前版本，实测 0.2.1-rc.2 |
 | 0.1.x（Harmony 早期 Web 版） | v1.0.0 | 旧版，已归档标签 |
 
 0.2.x 相对 0.1.x 重写了整个前端（组件、类名、Desktop 外壳），因此 v2 不是“改几个选择器”，而是重做了皮肤层：
@@ -111,6 +111,7 @@ node scripts/build-client.mjs
 | `package.json` / `cordis.patch.yml` | 插件包声明（`dsh.bundle` manifest 与插入行） |
 | `index.js` / `client.js` | 插件宿主面 / 浏览器面（生成的 bundle） |
 | `src/` + `scripts/build-client.mjs` | 皮肤源码与构建脚本 |
+| `scripts/theme-regression.mjs` | 无依赖的 Node 回归测试（发送按钮生命周期/降动效/清理/回退） |
 | `apple-style.css` / `whale-icon.css` | 旧版 dist 补丁方式使用的合并样式（0.1.x 兼容，v2 由构建脚本生成） |
 | `COMPATIBILITY.md` | 0.2.x / Desktop 兼容性报告与改造、维护指南 |
 | `docs/0.2.1-selector-map.json` | 0.1.x → 0.2.1 完整选择器映射（升级维护用） |

@@ -34,8 +34,8 @@ body,
 body {
   background-color: transparent !important;
   /* 玻璃色（亮/暗）——侧边栏、次级面板共用 */
-  --dsh-aqua-sidebar-light: rgba(242, 242, 247, 0.62);
-  --dsh-aqua-sidebar-dark: rgba(32, 34, 40, 0.62);
+  --dsh-aqua-sidebar-light: rgba(246, 248, 252, 0.40);
+  --dsh-aqua-sidebar-dark: rgba(28, 31, 39, 0.42);
   --dsh-aqua-pane-light: rgba(250, 251, 255, 0.42);
   --dsh-aqua-pane-dark: rgba(18, 21, 28, 0.42);
   --dsh-aqua-sidebar: var(--dsh-aqua-sidebar-light);
@@ -69,15 +69,15 @@ body[data-ds-dark-theme] {
 [data-platform="darwin"] .BynINW_sidebarCol,
 [data-platform="darwin"] [data-ds-dark-theme] .BynINW_sidebarCol {
   background: var(--dsh-aqua-sidebar) !important;
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .BynINW_rightbarCol,
 [data-platform="darwin"] .BynINW_rightbarCol {
   background: var(--dsh-aqua-pane) !important;
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .BynINW_bottomRow {
@@ -137,7 +137,13 @@ html[data-windows-titlebar] .BynINW_frame:before {
    5. 无障碍：用户要求减少透明/动效时不叠玻璃
    ------------------------------------------------------------------------- */
 @media (prefers-reduced-transparency: reduce) {
-  .BynINW_sidebarCol,
+  .BynINW_sidebarCol {
+    /* Accessibility fallback: reduced transparency must stay OPAQUE, so revert
+       to the solid host sidebar fill instead of the translucent glass colour. */
+    background: var(--dsw-specific-sidebar-fill) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
   .BynINW_rightbarCol {
     background: var(--dsw-specific-sidebar-fill) !important;
     backdrop-filter: none;

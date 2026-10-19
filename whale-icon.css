@@ -13,7 +13,8 @@
                                        (bundle JSX; confirmed by Lead/verifier)
      canvas                            background.js appends a dot-matrix whale
                                        <canvas> overlay into the button; the
-                                       original SVG is hidden by this file.
+                                       native SVG is hidden only after successful
+                                       attachment, preserving its fallback otherwise.
 
    MERGE TARGET : src/whale-icon.css (first CSS injected, before tokens/shell/
    regions). No external assets.
@@ -26,11 +27,10 @@
 [data-composer-card] button[class*="_primary"] {
   position: relative;
 }
-[data-composer-card] button[class*="_primary"] svg:has(path),
-[data-composer-card] button[class*="_primary"] svg:has(rect) {
+[data-composer-card] button[class*="_primary"][data-dsh-whale-attached] svg {
   display: none;
 }
-/* Running state: the whale swims underwater (gentle glide + rising bubbles). */
+/* Running state keeps the original animated whale, halo, and rising bubbles. */
 [data-composer-card] button[class*="_primary"]:has(rect) {
   animation: dsh-whale-halo 2.4s ease-in-out infinite;
 }

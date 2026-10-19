@@ -112,6 +112,16 @@ html, body, #root { background: transparent !important; }
 
 这些改动都在 `src/regions.css` 末尾的 §15 段，按"语义选择器优先、哈希集中在少量规则"维护。
 
+### 3.2 v2.2.0 视觉与性能升级（2026-10-19）
+
+在 v2.1 基础上完成的一轮系统性优化（经独立回归与实机截图验证）：
+
+1. **「珍珠玻璃」视觉体系**：侧边栏 / 视图标签 / 选中会话行 / 输入框 / 菜单统一为低饱和珍珠质感；设置面板按 macOS Tahoe System Settings 重做（920px、26px 圆角、独立圆角导航、分类彩色图标 chip、分组卡片、胶囊下拉、明暗双套）；
+2. **环境氛围**：顶部新增日/月天空（暖色夕阳 / 冷色月夜）与缓慢飞行的海鸥，仅装饰、aria-hidden、pointer-events:none；背景鲸鱼恢复官方 DeepSeek 轮廓并加入水面倒影、尾部传播波动，点阵与纹理共享同一波函数；
+3. **性能与健壮性**：移除侧边栏/右栏大范围 blur；发送按钮从「600ms 轮询 + 常驻 rAF」改为 MutationObserver 合并更新（空闲只画一次）；背景 rAF 在隐藏/失焦/reduced-motion 时取消并在恢复时继续，无补帧跳跃；canvas 失败时保留原生发送图标；减少透明度偏好恢复为**不透明**底色回退；
+4. **回归测试**：新增 `scripts/theme-regression.mjs`（无第三方依赖，Node VM + 有界 DOM/Canvas 桩），覆盖按钮挂载/停止态/注入清理/卸载、rAF 取消与恢复、reduced-motion、canvas 失败回退等；构建仍可复现（client.js 由 src 完整重建，两次构建哈希一致）；
+5. **本版修正**：设置导航图标不再用 `:nth-child` 替换成可能错位的自定义图标（导航项数量/顺序变化时图标会串位），改为保留 DSH 原生图标、仅按位置着色；减少透明度回退改回不透明。
+
 ## 4. 以后 DSH 升级了怎么维护
 
 1. 升级后若"皮肤部分失效"，先看是否只是哈希变化：从 `app.asar` 解包（或 `node_modules/@deepseek-ai/dsh-client-ui-*`）里重新提取每个 bundle 的 `*_module_css_default` 映射表；
