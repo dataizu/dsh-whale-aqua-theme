@@ -2,7 +2,7 @@
 
 给 [DeepSeek Harness](https://www.deepseek.com) 用的 **macOS 风格主题 + 水中鲸鱼动态背景 + 点阵鲸鱼发送按钮**，以 DSH 插件形式安装，支持 **Desktop 桌面版**与 Web 版。
 
-> **当前版本 v2.2.0**：已适配 DeepSeek Harness **0.2.x（Desktop 0.2.1-rc.2 实测）**。v2.2 把皮肤升级为「珍珠玻璃」质感：设置面板按 macOS Tahoe System Settings 重做（独立圆角导航、分类彩色图标、分组卡片、胶囊下拉）、顶部新增日/月天空与海鸥、背景鲸鱼恢复官方轮廓并加入水面倒影/尾摆传播；同时优化了性能（去掉大范围 blur、发送按钮改为 MutationObserver 驱动、背景 rAF 可暂停）并补充了 Node 回归测试。旧版 v1.x 仅适用于 0.1.x（Harmony 早期版本）。兼容性细节与改造记录见 [COMPATIBILITY.md](COMPATIBILITY.md)。
+> **当前版本 v2.3.0**：已适配 DeepSeek Harness **0.2.x（Desktop 0.2.1-rc.2 / rc.3 实测）**。v2.3 新增**运行时选择器自愈**——主题内置 120 条「稳定 local 名」绑定，加载时自动把 CSS 中写死的类名哈希改写为当前运行时的实际哈希（`:is(.旧哈希, .当前哈希)`），DSH 升级换哈希后主题可自愈，不再需要人工移植；背景鲸鱼改为「磨砂玻璃」材质（缓存微粒替代逐帧点阵，性能更低），并针对 Windows 关闭透明效果的机器提供不透明水景回退；输入框光环动画重做（支持 reduced-motion / forced-colors）。兼容性细节与改造记录见 [COMPATIBILITY.md](COMPATIBILITY.md)。
 
 ## 🖼️ 预览
 
@@ -53,7 +53,7 @@
 
 | DSH 版本 | 主题版本 | 说明 |
 | --- | --- | --- |
-| **0.2.x（含 Desktop 桌面版）** | **v2.2.0** | 当前版本，实测 0.2.1-rc.2 |
+| **0.2.x（含 Desktop 桌面版）** | **v2.3.0** | 当前版本，实测 0.2.1-rc.2 / rc.3 |
 | 0.1.x（Harmony 早期 Web 版） | v1.0.0 | 旧版，已归档标签 |
 
 0.2.x 相对 0.1.x 重写了整个前端（组件、类名、Desktop 外壳），因此 v2 不是“改几个选择器”，而是重做了皮肤层：

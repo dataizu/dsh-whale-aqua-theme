@@ -547,6 +547,23 @@ body[data-ds-dark-theme] {
   -webkit-backdrop-filter: none;
 }
 
+/* Opaque host base plus a local water canvas keeps the sidebar legible even
+   when Windows disables desktop transparency. The isolated negative layer
+   paints above the host background but below every existing child. */
+[class*="_sidebarCol"][data-dsh-sidebar-water-host] {
+  position: relative;
+  isolation: isolate;
+}
+[class*="_sidebarCol"][data-dsh-sidebar-water-host] > canvas[data-dsh-sidebar-water] {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
 .BynINW_rightbarCol,
 [data-platform="darwin"] .BynINW_rightbarCol {
   background: var(--dsh-aqua-pane) !important;
@@ -567,6 +584,12 @@ body[data-ds-dark-theme] {
     linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.05) 60%, rgba(255, 255, 255, 0) 100%),
     var(--dsw-specific-sidebar-fill) !important;
   -webkit-app-region: drag;
+}
+
+/* Only the hidden native-caption color probe should be transparent; its text
+   color remains the value consumed by the preload/titlebar overlay. */
+html[data-windows-titlebar] body > span[style*="visibility: hidden"][style*="pointer-events: none"][style*="background-color: var(--dsw-specific-sidebar-fill)"][style*="color: var(--dsw-alias-label-primary)"] {
+  background-color: transparent !important;
 }
 
 html[data-windows-titlebar][data-fullscreen] .BynINW_frame {
@@ -2171,22 +2194,28 @@ body [data-composer-card]:has(button[class*="_primary"] svg rect)::before,
 body [data-composer-card]:has(.RlGAzG_pending)::before {
   content: "";
   position: absolute;
-  inset: -2px;
+  inset: -3px;
+  z-index: 2;
   box-sizing: border-box;
-  border: 1px solid rgba(66, 132, 213, 0.68);
-  border-radius: inherit;
-  box-shadow: 0 0 4px rgba(66, 132, 213, 0.16);
+  border: 2px solid rgba(40, 137, 255, 0.95);
+  border-radius: 25px;
+  box-shadow: 0 0 0 3px rgba(68, 156, 255, 0.14), 0 0 14px rgba(48, 139, 255, 0.38);
   pointer-events: none;
   animation: dsh-composer-breathe 2.6s ease-in-out infinite;
 }
 body[data-ds-dark-theme] [data-composer-card]:has(button[class*="_primary"] svg rect)::before,
 body[data-ds-dark-theme] [data-composer-card]:has(.RlGAzG_pending)::before {
   border-color: rgba(117, 169, 235, 0.72);
-  box-shadow: 0 0 4px rgba(89, 151, 224, 0.20);
+  box-shadow: 0 0 0 3px rgba(89, 151, 224, 0.16), 0 0 14px rgba(89, 151, 224, 0.38);
 }
 @keyframes dsh-composer-breathe {
-  0%, 100% { opacity: 0.25; }
-  50% { opacity: 0.8; }
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: 1; }
+}
+/* Keep the focus outline from visually masking the running pulse. */
+body [data-composer-card]:has(button[class*="_primary"] svg rect),
+body[data-ds-dark-theme] [data-composer-card]:has(button[class*="_primary"] svg rect) {
+  box-shadow: inset 0 0 0 1px rgba(116, 143, 177, 0.24), 0 2px 6px rgba(38, 50, 68, 0.07);
 }
 @media (prefers-reduced-motion: reduce) {
   body [data-composer-card]:has(button[class*="_primary"] svg rect)::before,

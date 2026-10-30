@@ -122,6 +122,13 @@ html, body, #root { background: transparent !important; }
 4. **回归测试**：新增 `scripts/theme-regression.mjs`（无第三方依赖，Node VM + 有界 DOM/Canvas 桩），覆盖按钮挂载/停止态/注入清理/卸载、rAF 取消与恢复、reduced-motion、canvas 失败回退等；构建仍可复现（client.js 由 src 完整重建，两次构建哈希一致）；
 5. **本版修正**：设置导航图标不再用 `:nth-child` 替换成可能错位的自定义图标（导航项数量/顺序变化时图标会串位），改为保留 DSH 原生图标、仅按位置着色；减少透明度回退改回不透明。
 
+### 3.3 v2.3.0 选择器自愈 + 磨砂鲸鱼（2026-10-25 ~ 10-28，适配 rc.3）
+
+1. **运行时选择器自愈（最重要的架构变化）**：`src/apply.js` 内置 120 条「稳定 local 名 ↔ 已知哈希」绑定；插件加载时读取页面内各 `<style data-plugin-css>` 的实时哈希表，把主题 CSS 中写死的哈希选择器自动改写为 `:is(.已知哈希, .当前哈希)`。**DSH 升级换哈希后主题可以自愈**，不再依赖人工移植（rc.2 → rc.3 的 151 个 module 已实测全部命中、120 条绑定零缺口）；
+2. **磨砂鲸鱼材质**：背景鲸鱼改为缓存的冰蓝渐变 + 半透明躯干 + 轻微轮廓高光，点阵改成 32 个确定性缓存微粒，删除每帧 560 次点阵圆点绘制；不新增 canvas / rAF / timer；
+3. **Windows 关闭透明效果（EnableTransparency=0）的适配**：`prefers-reduced-transparency: reduce` 下改为「不透明局部 canvas 裁剪复制现有水景」，侧栏保留水景观感、文字仍为实色降级；DSH preload 用于探测标题栏 caption 颜色的隐藏 span 改为透明背景，使原生窗口按钮透出天空色；
+4. **输入框光环重做**：呼吸光环移到 `::before`（支持 reduced-motion / forced-colors / 减少透明度降级），保留发送/聚焦/排队三种状态；
+5. **运维事实**：10-28 插件目录被一次包更新用 GitHub 上的 v2.2.0 覆盖（安装目录只剩 `files` 清单内文件），Codex 执行 update-repair 恢复；本版推送后，后续包更新拉到的就是含全部修复的版本，不会再被覆盖回退。
 ## 4. 以后 DSH 升级了怎么维护
 
 1. 升级后若"皮肤部分失效"，先看是否只是哈希变化：从 `app.asar` 解包（或 `node_modules/@deepseek-ai/dsh-client-ui-*`）里重新提取每个 bundle 的 `*_module_css_default` 映射表；
