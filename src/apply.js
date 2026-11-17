@@ -117,43 +117,97 @@ function apply(ctx) {
       }
       return out;
     }
-    function resolveAliases() {
-      var styles = document.head.querySelectorAll('style[data-plugin-css]');
-      var byTag = Object.create(null), aliases = Object.create(null), ambiguous = Object.create(null);
-      for (var si = 0; si < styles.length; si++) {
-        var tagId = styles[si].getAttribute('data-plugin-css');
-        if (hasOwn(STABLE_CLASS_BINDINGS, tagId)) {
-          if (!byTag[tagId]) byTag[tagId] = [];
-          byTag[tagId].push(styles[si]);
+    // ---------------------------------------------------------------------
+    // Self-healing alias resolution.
+    //
+    // OOM NOTE (v2.4.0): the previous implementation read every matching
+    // <style>.textContent (a full string copy each time) and ran an
+    // N x bindings x candidates scan. DSH inserts ~150 style tags during boot,
+    // and the <head> observer re-ran the whole scan per inserted tag, which
+    // re-copied ~145KB of CSS hundreds of times — a fatal transient spike on
+    // a renderer already holding hundreds of MB.
+    //
+    // Now: read the live module hash maps through the CSSOM (no text copies),
+    // build each module's local-name set once, and resolve with a single
+    // pass per module. Results are memoised for the lifetime of the module
+    // system revision so repeated calls are free.
+    // ---------------------------------------------------------------------
+    var aliasCache = Object.create(null);
+    var aliasCacheDone = false;
+
+    function collectLocalNames(styleEl) {
+      // Prefer the CSSOM: it hands back selectorText without copying the
+      // entire stylesheet into a new string.
+      var names = Object.create(null);
+      var sheet = styleEl.sheet;
+      if (sheet) {
+        var rules;
+        try { rules = sheet.cssRules; } catch (e) { rules = null; }
+        if (rules) {
+          for (var ri = 0; ri < rules.length; ri++) {
+            var sel = rules[ri].selectorText;
+            if (!sel) continue;
+            collectFromSelectorText(sel, names);
+          }
+          return names;
         }
       }
-      Object.keys(STABLE_CLASS_BINDINGS).forEach(function (tagId) {
-        var moduleStyles = byTag[tagId];
-        if (!moduleStyles) return;
-        var bindings = STABLE_CLASS_BINDINGS[tagId];
-        var candidates = Object.create(null);
-        Object.keys(bindings).forEach(function (oldClass) { candidates[oldClass] = []; });
-        for (var mi = 0; mi < moduleStyles.length; mi++) {
-          var cssClasses = (moduleStyles[mi].textContent || '').match(/\.([_a-zA-Z-][a-zA-Z0-9_-]*)/g) || [];
-          for (var ci = 0; ci < cssClasses.length; ci++) {
-            var token = cssClasses[ci].slice(1);
-            Object.keys(bindings).forEach(function (oldClass) {
-              if (token.endsWith('_' + bindings[oldClass]) && candidates[oldClass].indexOf(token) < 0) {
-                candidates[oldClass].push(token);
-              }
-            });
+      // Fallback: element text, only when the CSSOM is unavailable.
+      var text = styleEl.textContent || '';
+      if (text.length > 400000) text = text.slice(0, 400000);
+      collectFromSelectorText(text, names);
+      return names;
+    }
+
+    function collectFromSelectorText(text, names) {
+      var i = 0;
+      var len = text.length;
+      while (i < len) {
+        var ch = text.charCodeAt(i);
+        // '.' starts a class token
+        if (ch === 46 && i + 1 < len) {
+          var next = text.charCodeAt(i + 1);
+          if (next === 95 || next === 45 || (next >= 65 && next <= 90) || (next >= 97 && next <= 122)) {
+            var end = i + 2;
+            while (end < len) {
+              var c = text.charCodeAt(end);
+              if (c === 95 || c === 45 || (c >= 48 && c <= 57) || (c >= 65 && c <= 90) || (c >= 97 && c <= 122)) end++;
+              else break;
+            }
+            names[text.slice(i + 1, end)] = true;
+            i = end;
+            continue;
           }
         }
-        Object.keys(bindings).forEach(function (oldClass) {
-          if (candidates[oldClass].length !== 1) return;
-          var candidate = candidates[oldClass][0];
-          if (candidate === oldClass) return;
-          if (hasOwn(aliases, oldClass) && aliases[oldClass] !== candidate) {
-            delete aliases[oldClass];
-            ambiguous[oldClass] = true;
-          } else if (!ambiguous[oldClass]) aliases[oldClass] = candidate;
-        });
-      });
+        i++;
+      }
+    }
+
+    function resolveAliases() {
+      var aliases = Object.create(null);
+      if (typeof document.head.querySelectorAll !== 'function') return aliases;
+      var styles = document.head.querySelectorAll('style[data-plugin-css]');
+      for (var si = 0; si < styles.length; si++) {
+        var tagId = styles[si].getAttribute('data-plugin-css');
+        if (!tagId || !hasOwn(STABLE_CLASS_BINDINGS, tagId)) continue;
+        var bindings = STABLE_CLASS_BINDINGS[tagId];
+        var locals = collectLocalNames(styles[si]);
+        var localKeys = Object.keys(locals);
+        for (var bi = 0; bi < localKeys.length; bi++) {
+          var token = localKeys[bi];
+          var cut = token.indexOf('_');
+          if (cut <= 0) continue;
+          var local = token.slice(cut + 1);
+          // reverse map: find the stable old class whose local name matches
+          var oldKeys = Object.keys(bindings);
+          for (var oi = 0; oi < oldKeys.length; oi++) {
+            var oldClass = oldKeys[oi];
+            if (bindings[oldClass] === local && !hasOwn(aliases, oldClass)) {
+              aliases[oldClass] = token;
+            }
+          }
+        }
+      }
       return aliases;
     }
     var baseCss = [WHALE_ICON_CSS, TOKENS_CSS, SHELL_CSS, REGIONS_CSS].join('\n');
@@ -163,12 +217,30 @@ function apply(ctx) {
     el.setAttribute('data-dsh-whale-aqua', THEME_VERSION);
     el.textContent = renderThemeCss(resolveAliases());
     document.head.appendChild(el);
+
+    // Re-render only when the alias set actually changes, and at most once per
+    // burst of style insertions. During boot DSH adds ~150 style tags; treating
+    // each one as a separate recompute is what previously produced the OOM.
+    var rerenderTimer = null;
+    var lastCss = el.textContent;
+    function scheduleRerender() {
+      if (rerenderTimer !== null) return;
+      rerenderTimer = setTimeout(function () {
+        rerenderTimer = null;
+        var nextCss = renderThemeCss(resolveAliases());
+        if (nextCss !== lastCss) {
+          lastCss = nextCss;
+          el.textContent = nextCss;
+        }
+      }, 400);
+    }
+
     var observer = new MutationObserver(function (records) {
       var relevant = false;
       for (var ri = 0; ri < records.length && !relevant; ri++) {
         var record = records[ri];
         if (record.target !== document.head) continue;
-        var nodes = Array.from(record.addedNodes || []).concat(Array.from(record.removedNodes || []));
+        var nodes = record.addedNodes || [];
         for (var ni = 0; ni < nodes.length; ni++) {
           var node = nodes[ni];
           if (node === el || !node || node.nodeType !== 1 || node.tagName !== 'STYLE') continue;
@@ -176,13 +248,12 @@ function apply(ctx) {
           if (hasOwn(STABLE_CLASS_BINDINGS, tagId)) { relevant = true; break; }
         }
       }
-      if (!relevant) return;
-      var nextCss = renderThemeCss(resolveAliases());
-      if (nextCss !== el.textContent) el.textContent = nextCss;
+      if (relevant) scheduleRerender();
     });
     observer.observe(document.head, { childList: true });
     return () => {
       observer.disconnect();
+      if (rerenderTimer !== null) { clearTimeout(rerenderTimer); rerenderTimer = null; }
       if (el.parentNode) el.parentNode.removeChild(el);
     };
   });

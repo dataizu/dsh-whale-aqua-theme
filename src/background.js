@@ -117,7 +117,10 @@ function startBackground() {
       var nextHost = typeof document.querySelector === 'function' ? document.querySelector(sidebarHostSelector) : null;
       if (nextHost) attachSidebarWater(nextHost);
     });
-    sidebarMountObserver.observe(document.body, { childList: true, subtree: true });
+    // OOM NOTE (v2.4.0): observing body with subtree:true fires for every
+    // streamed message node; the callback then ran querySelector on the whole
+    // document each time. Watching only direct children keeps the cost flat.
+    sidebarMountObserver.observe(document.body, { childList: true });
   }
   var sunsetCanvas = document.createElement('canvas');
   var sunsetCtx = sunsetCanvas.getContext('2d');
@@ -932,8 +935,35 @@ var WHALE = 'M22.917 1.43C22.671 1.31 22.566 1.539 22.422 1.655C22.373 1.693 22.
     queueMicrotask(updateButtons);
   });
   updateButtons();
-  buttonObserver.observe(document.body, { childList: true, subtree: true,
-    attributes: true, attributeFilter: ['class', 'data-composer-card'] });
+  // OOM NOTE (v2.4.0): scoped to the composer subtree instead of the whole
+  // body. The composer is the only place a send button can appear, so watching
+  // it removes the per-message callback traffic entirely.
+  var composerScope = document.querySelector('[data-composer-card]');
+  var composerObserverHost = composerScope ? (composerScope.closest('[data-composer-seat]') || composerScope.parentNode || document.body) : document.body;
+  buttonObserver.observe(composerObserverHost, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['class', 'data-composer-card']
+  });
+  // One cheap fallback: when the composer seat itself is (re)mounted, re-attach.
+  var composerRemountObserver = new MutationObserver(function () {
+    if (__disposed) return;
+    var seat = document.querySelector('[data-composer-seat]') || document.querySelector('[data-composer-card]');
+    if (!seat) return;
+    var host = seat.closest('[data-composer-seat]') || seat.parentNode;
+    if (!host || host === composerObserverHost) return;
+    buttonObserver.disconnect();
+    composerObserverHost = host;
+    buttonObserver.observe(composerObserverHost, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'data-composer-card']
+    });
+    updateButtons();
+  });
+  composerRemountObserver.observe(document.body, { childList: true });
   var themeObserver = new MutationObserver(function () {
     if (!__disposed) paintSunsetCache();
     if (!__disposed && reduced) draw(simTime, 0);
@@ -946,6 +976,7 @@ var WHALE = 'M22.917 1.43C22.671 1.31 22.566 1.539 22.422 1.655C22.373 1.693 22.
     backgroundFrame = null;
     buttonObserver.disconnect();
     themeObserver.disconnect();
+    composerRemountObserver.disconnect();
     if (sidebarMountObserver) sidebarMountObserver.disconnect();
     if (sidebarThemeObserver) sidebarThemeObserver.disconnect();
     sidebarMountObserver = null;
